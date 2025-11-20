@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prospecting Calculator</title>
+    <title>Prospecting Calculator | Pro Tool</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💎</text></svg>">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -110,9 +112,8 @@
             background-color: var(--bg-hover);
         }
 
+        /* Inputs numéricos planos */
         input[type="number"] { font-family: 'JetBrains Mono', monospace; }
-
-        /* --- HIDE SPINNERS --- */
         input[type=number]::-webkit-outer-spin-button,
         input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
@@ -126,7 +127,7 @@
             position: relative;
         }
 
-        /* --- TABLE --- */
+        /* --- TABLE STYLES & SORTING --- */
         .table-container {
             flex-grow: 1;
             overflow-y: auto;
@@ -153,7 +154,27 @@
             background-color: var(--bg-app);
             z-index: 5;
             white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.2s, background 0.2s;
         }
+
+        th:hover {
+            color: var(--text-main);
+            background-color: var(--bg-hover);
+        }
+
+        .th-content { display: flex; align-items: center; gap: 6px; }
+        th.text-right .th-content { justify-content: flex-end; }
+
+        .sort-icon {
+            opacity: 0.3; width: 14px; height: 14px;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        
+        th:hover .sort-icon { opacity: 0.7; }
+        th.active-sort { color: var(--accent); }
+        th.active-sort .sort-icon { opacity: 1; transform: scale(1.1); }
 
         td {
             padding: 0.85rem 1.5rem;
@@ -164,63 +185,26 @@
 
         tr:hover td { background-color: var(--bg-hover); }
 
-        /* --- HIGHLIGHT BEST ROW (NUEVO) --- */
-        .row-best {
-            background: linear-gradient(90deg, rgba(234, 179, 8, 0.15) 0%, transparent 80%);
-        }
-        .row-best td {
-            border-top: 1px solid rgba(234, 179, 8, 0.2);
-            border-bottom: 1px solid rgba(234, 179, 8, 0.2);
-        }
-        .row-best td:first-child {
-            border-left: 3px solid var(--r-legendary); /* Gold border indicator */
-        }
-        
+        /* Highlight Best Row */
+        .row-best { background: linear-gradient(90deg, rgba(234, 179, 8, 0.15) 0%, transparent 80%); }
+        .row-best td { border-top: 1px solid rgba(234, 179, 8, 0.2); border-bottom: 1px solid rgba(234, 179, 8, 0.2); }
+        .row-best td:first-child { border-left: 3px solid var(--r-legendary); }
         .best-badge {
-            display: inline-block;
-            background-color: var(--r-legendary);
-            color: #000;
-            font-size: 0.6rem;
-            font-weight: 800;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-right: 8px;
-            letter-spacing: 0.05em;
-            vertical-align: middle;
+            display: inline-block; background-color: var(--r-legendary); color: #000;
+            font-size: 0.6rem; font-weight: 800; padding: 2px 6px; border-radius: 4px;
+            margin-right: 8px; letter-spacing: 0.05em; vertical-align: middle;
         }
 
-        /* --- TYPOGRAPHY & BADGES --- */
-        .location-tag {
-            color: var(--text-muted);
-            font-weight: 500;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        /* En la fila ganadora, el texto de ubicacion brilla un poco */
+        /* Typography & Components */
+        .location-tag { color: var(--text-muted); font-weight: 500; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
         .row-best .location-tag { color: var(--text-main); font-weight: 600; }
-
-        .mineral-name {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--text-main);
-            text-decoration: none;
-        }
+        .mineral-name { font-weight: 600; font-size: 0.95rem; color: var(--text-main); text-decoration: none; }
         .mineral-name:hover { color: var(--accent); }
-
         .badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.2rem 0.6rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            min-width: 75px;
-            background: rgba(255,255,255,0.05);
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+            min-width: 75px; background: rgba(255,255,255,0.05);
         }
 
         /* Rarity Colors */
@@ -230,58 +214,38 @@
         .type-epic { color: var(--r-epic); border: 1px solid rgba(167, 139, 250, 0.3); }
         .type-legendary { color: var(--r-legendary); border: 1px solid rgba(251, 191, 36, 0.3); }
         .type-mythic { color: var(--r-mythic); border: 1px solid rgba(244, 114, 182, 0.3); }
-        .type-exotic { 
-            color: var(--r-exotic); 
-            border: 1px solid rgba(239, 68, 68, 0.5);
-            box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
-        }
+        .type-exotic { color: var(--r-exotic); border: 1px solid rgba(239, 68, 68, 0.5); box-shadow: 0 0 12px rgba(239, 68, 68, 0.2); }
 
         .val-text { font-family: 'JetBrains Mono', monospace; color: var(--text-muted); font-size: 0.85rem; }
         
-        /* Bateas / Effort Column */
+        /* Effort Column */
         .prob-cell { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
-        
-        .batches-count { 
-            font-family: 'JetBrains Mono', monospace; 
-            font-weight: 700; 
-            font-size: 1.25rem; 
-            color: var(--text-main);
-            line-height: 1.1;
-        }
-        
-        .batches-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 2px;
-        }
-
-        .prob-sub { 
-            font-family: 'JetBrains Mono', monospace; 
-            font-size: 0.7rem; 
-            color: var(--text-dim); 
-            margin-top: 2px;
-        }
-
+        .batches-count { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.25rem; color: var(--text-main); line-height: 1.1; }
+        .batches-label { font-size: 0.7rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 2px; }
+        .prob-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
         .effort-easy { color: var(--r-uncommon); }
         .effort-mid { color: var(--accent); }
         .effort-hard { color: var(--r-legendary); }
         .effort-insane { color: var(--r-exotic); }
 
-        /* --- ERROR OVERLAY --- */
-        #error-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-app);
-            display: none;
-            justify-content: center; align-items: center;
-            z-index: 100;
+        /* Donations */
+        .donation-container { margin-top: auto; padding-top: 1rem; }
+        .donation-divider { height: 1px; background: var(--border); margin-bottom: 1.5rem; width: 100%; }
+        .kofi-button {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            background-color: #29abe0; color: white; text-decoration: none;
+            padding: 0.8rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem;
+            transition: transform 0.2s, filter 0.2s; box-shadow: 0 4px 12px rgba(41, 171, 224, 0.2);
         }
+        .kofi-button:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .donation-text { font-size: 0.7rem; color: var(--text-dim); text-align: center; margin-top: 0.8rem; line-height: 1.4; }
+        .donation-text strong { color: var(--text-muted); }
+
+        /* Error */
+        #error-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-app); display: none; justify-content: center; align-items: center; z-index: 100; }
         .error-box { text-align: center; padding: 2rem; border: 1px solid var(--r-exotic); border-radius: 8px; background: var(--bg-panel); }
         .error-box h2 { color: var(--r-exotic); margin: 0 0 1rem 0; }
-
-        /* --- RESPONSIVE --- */
+        
         @media (max-width: 768px) {
             body { flex-direction: column; overflow: auto; }
             .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
@@ -303,20 +267,21 @@
     <aside class="sidebar">
         <div class="brand">
             <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/></svg>
-            PROSPECTING CALCULATOR
+            PROSPECTOR <span style="color: var(--text-muted); font-weight: 400;">PRO</span>
         </div>
 
         <div class="controls-wrapper">
+            
             <div class="control-group">
-                <label for="zoneSelect">Zona / Ubicación</label>
-                <select id="zoneSelect">
-                    <option value="all">🌍 Todas las Ubicaciones</option>
-                </select>
+                <label for="zoneSearch">Filtrar por Zona</label>
+                <input type="text" id="zoneSearch" list="zoneSuggestions" placeholder="Todas las zonas...">
+                <datalist id="zoneSuggestions"></datalist>
             </div>
 
             <div class="control-group">
-                <label for="search">Filtrar Mineral</label>
-                <input type="text" id="search" placeholder="Ej: Diamond, Gold...">
+                <label for="mineralSearch">Buscar Mineral</label>
+                <input type="text" id="mineralSearch" list="mineralSuggestions" placeholder="Ej: Diamond...">
+                <datalist id="mineralSuggestions"></datalist>
             </div>
 
             <div style="height: 1px; background: var(--border); margin: 0.5rem 0;"></div>
@@ -331,6 +296,18 @@
                 <input type="number" id="capacity" value="50" min="1">
             </div>
         </div>
+
+        <div class="donation-container">
+            <div class="donation-divider"></div>
+            <a href="https://ko-fi.com/TU_USUARIO_AQUI" target="_blank" class="kofi-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+                <span>Buy me a Coffee</span>
+            </a>
+            <p class="donation-text">
+                Free tool by <strong>facur33</strong>.<br>
+                Server costs are on me! ❤️
+            </p>
+        </div>
     </aside>
 
     <main class="main-content">
@@ -338,12 +315,24 @@
             <table id="resultsTable">
                 <thead>
                     <tr>
-                        <th style="width: 18%">Ubicación</th>
-                        <th style="width: 20%">Mineral</th>
-                        <th style="width: 15%">Rareza</th>
-                        <th style="width: 15%; text-align: right;">Valor</th>
-                        <th style="width: 15%; text-align: right;">Base (1 en X)</th>
-                        <th style="width: 17%; text-align: right;">Esfuerzo Estimado</th>
+                        <th data-sort="location" style="width: 18%">
+                            <div class="th-content">Ubicación <svg class="sort-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z"/></svg></div>
+                        </th>
+                        <th data-sort="name" style="width: 20%">
+                            <div class="th-content">Mineral <svg class="sort-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z"/></svg></div>
+                        </th>
+                        <th data-sort="rarity" style="width: 15%">
+                            <div class="th-content">Rareza <svg class="sort-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z"/></svg></div>
+                        </th>
+                        <th data-sort="value" class="text-right" style="width: 15%;">
+                            <div class="th-content">Valor <svg class="sort-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z"/></svg></div>
+                        </th>
+                        <th data-sort="oneIn" class="text-right" style="width: 15%;">
+                            <div class="th-content">Base (1 en X) <svg class="sort-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z"/></svg></div>
+                        </th>
+                        <th data-sort="effort" class="text-right" style="width: 17%;">
+                            <div class="th-content">Esfuerzo Estimado <svg class="sort-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z"/></svg></div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -362,43 +351,118 @@
                 return;
             }
 
+            const rarityRank = {
+                "common": 1, "uncommon": 2, "rare": 3, "epic": 4,
+                "legendary": 5, "mythic": 6, "exotic": 7
+            };
+
+            // Estado separado para los dos filtros
             const state = {
-                zone: 'all',
-                search: '',
+                zoneFilter: '',
+                mineralFilter: '',
                 luck: 1,
-                capacity: 50
+                capacity: 50,
+                sortBy: 'effort',
+                sortDesc: true
             };
 
             const ui = {
-                zoneSelect: document.getElementById('zoneSelect'),
-                searchInput: document.getElementById('search'),
+                zoneInput: document.getElementById('zoneSearch'),
+                zoneSuggestions: document.getElementById('zoneSuggestions'),
+                mineralInput: document.getElementById('mineralSearch'),
+                mineralSuggestions: document.getElementById('mineralSuggestions'),
                 luckInput: document.getElementById('luck'),
                 capInput: document.getElementById('capacity'),
                 tableBody: document.querySelector('#resultsTable tbody'),
+                tableHeaders: document.querySelectorAll('th[data-sort]'),
                 noResults: document.getElementById('no-results')
             };
 
             function init() {
-                populateZones();
+                populateSearchLists();
                 renderTable();
                 setupListeners();
+                updateHeaderVisuals();
             }
 
-            function populateZones() {
-                const zones = Object.keys(scrapedDatabase).sort();
-                zones.forEach(zone => {
+            // --- NUEVA LOGICA DE POBLADO INDEPENDIENTE ---
+            function populateSearchLists() {
+                const allMinerals = new Set();
+                const allZones = Object.keys(scrapedDatabase).sort();
+
+                // 1. Poblar Zonas
+                allZones.forEach(zone => {
                     const option = document.createElement('option');
                     option.value = zone;
-                    option.textContent = zone;
-                    ui.zoneSelect.appendChild(option);
+                    ui.zoneSuggestions.appendChild(option);
+                });
+
+                // 2. Extraer y poblar Minerales únicos
+                Object.values(scrapedDatabase).forEach(list => {
+                    list.forEach(m => allMinerals.add(m.name));
+                });
+
+                Array.from(allMinerals).sort().forEach(mineral => {
+                    const option = document.createElement('option');
+                    option.value = mineral;
+                    ui.mineralSuggestions.appendChild(option);
                 });
             }
 
             function setupListeners() {
-                ui.zoneSelect.addEventListener('change', (e) => { state.zone = e.target.value; renderTable(); });
-                ui.searchInput.addEventListener('input', (e) => { state.search = e.target.value.toLowerCase(); renderTable(); });
+                // Listener Filtro Zona
+                ui.zoneInput.addEventListener('input', (e) => { 
+                    state.zoneFilter = e.target.value.toLowerCase(); 
+                    renderTable(); 
+                });
+
+                // Listener Filtro Mineral
+                ui.mineralInput.addEventListener('input', (e) => { 
+                    state.mineralFilter = e.target.value.toLowerCase(); 
+                    renderTable(); 
+                });
+
                 ui.luckInput.addEventListener('input', (e) => { state.luck = parseFloat(e.target.value) || 1; renderTable(); });
                 ui.capInput.addEventListener('input', (e) => { state.capacity = parseInt(e.target.value) || 1; renderTable(); });
+
+                ui.tableHeaders.forEach(th => {
+                    th.addEventListener('click', () => {
+                        const column = th.getAttribute('data-sort');
+                        handleSort(column);
+                    });
+                });
+            }
+
+            function handleSort(column) {
+                if (state.sortBy === column) {
+                    state.sortDesc = !state.sortDesc;
+                } else {
+                    state.sortBy = column;
+                    if (column === 'name' || column === 'location') {
+                        state.sortDesc = false;
+                    } else {
+                        state.sortDesc = true;
+                    }
+                }
+                updateHeaderVisuals();
+                renderTable();
+            }
+
+            function updateHeaderVisuals() {
+                ui.tableHeaders.forEach(th => {
+                    th.classList.remove('active-sort');
+                    const icon = th.querySelector('.sort-icon');
+                    icon.innerHTML = '<path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z"/>';
+                    
+                    if (th.getAttribute('data-sort') === state.sortBy) {
+                        th.classList.add('active-sort');
+                        if (state.sortDesc) {
+                            icon.innerHTML = '<path d="M7 10l5 5 5-5H7z"/>'; 
+                        } else {
+                            icon.innerHTML = '<path d="M7 14l5-5 5 5H7z"/>';
+                        }
+                    }
+                });
             }
 
             function calculateChance(baseOneIn) {
@@ -415,21 +479,20 @@
             function renderTable() {
                 ui.tableBody.innerHTML = '';
 
+                // 1. Aplanar SIEMPRE toda la base de datos
                 let rawData = [];
-                
-                if (state.zone === 'all') {
-                    Object.entries(scrapedDatabase).forEach(([zoneName, minerals]) => {
-                        const mineralsWithLoc = minerals.map(m => ({ ...m, location: zoneName }));
-                        rawData = rawData.concat(mineralsWithLoc);
-                    });
-                } else {
-                    const minerals = scrapedDatabase[state.zone] || [];
-                    rawData = minerals.map(m => ({ ...m, location: state.zone }));
-                }
+                Object.entries(scrapedDatabase).forEach(([zoneName, minerals]) => {
+                    const mineralsWithLoc = minerals.map(m => ({ ...m, location: zoneName }));
+                    rawData = rawData.concat(mineralsWithLoc);
+                });
 
-                let filtered = rawData.filter(item => 
-                    item.name.toLowerCase().includes(state.search)
-                );
+                // 2. Aplicar Filtros DUALES (AND logic)
+                let filtered = rawData.filter(item => {
+                    const matchZone = state.zoneFilter === '' || item.location.toLowerCase().includes(state.zoneFilter);
+                    const matchMineral = state.mineralFilter === '' || item.name.toLowerCase().includes(state.mineralFilter);
+                    
+                    return matchZone && matchMineral;
+                });
 
                 if (filtered.length === 0) {
                     ui.noResults.style.display = 'block';
@@ -444,27 +507,42 @@
                     };
                 });
 
-                // Ordenar: Los más fáciles arriba
-                processed.sort((a, b) => b.calcChance - a.calcChance);
+                processed.sort((a, b) => {
+                    let valA, valB;
+
+                    switch(state.sortBy) {
+                        case 'rarity':
+                            valA = rarityRank[a.type.toLowerCase()] || 0;
+                            valB = rarityRank[b.type.toLowerCase()] || 0;
+                            break;
+                        case 'value': valA = a.value; valB = b.value; break;
+                        case 'oneIn': valA = a.oneIn; valB = b.oneIn; break;
+                        case 'effort': valA = a.calcChance; valB = b.calcChance; break;
+                        case 'name': valA = a.name.toLowerCase(); valB = b.name.toLowerCase(); break;
+                        case 'location': valA = a.location.toLowerCase(); valB = b.location.toLowerCase(); break;
+                        default: valA = 0; valB = 0;
+                    }
+
+                    if (valA < valB) return state.sortDesc ? 1 : -1;
+                    if (valA > valB) return state.sortDesc ? -1 : 1;
+                    return 0;
+                });
 
                 const fragment = document.createDocumentFragment();
 
                 processed.forEach((item, index) => {
                     const tr = document.createElement('tr');
                     
-                    // --- DETECCION DE MEJOR FILA (PRIMERA) ---
                     let locationHTML = item.location;
                     if (index === 0) {
                         tr.classList.add('row-best');
-                        locationHTML = `<span class="best-badge">🏆 MEJOR ZONA</span> ${item.location}`;
+                        locationHTML = `<span class="best-badge">🏆 TOP 1</span> ${item.location}`;
                     }
 
-                    // --- LÓGICA DE ESFUERZO (BATEAS) ---
                     const chance = item.calcChance;
                     let batchesStr = "";
                     let percentStr = "";
                     let effortClass = "effort-mid";
-
                     const avgBatches = 1 / chance;
 
                     if (chance >= 0.99) {

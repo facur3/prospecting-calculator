@@ -52,15 +52,15 @@
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
 
-        /* --- SIDEBAR --- */
+        /* --- SIDEBAR (Left Panel) --- */
         .sidebar {
             width: 300px;
             background-color: var(--bg-app);
             border-right: 1px solid var(--border);
             padding: 1.5rem;
             display: flex;
-            flex-direction: column;
-            gap: 2rem;
+            flex-direction: column; /* Organiza elementos verticalmente */
+            height: 100vh;          /* Ocupa toda la altura de la pantalla */
             flex-shrink: 0;
             z-index: 10;
         }
@@ -75,14 +75,20 @@
             gap: 0.75rem;
             padding-bottom: 1rem;
             border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+            flex-shrink: 0; 
         }
         .brand svg { width: 24px; height: 24px; fill: var(--accent); }
 
+        /* Contenedor de Inputs (El que se estira) */
         .controls-wrapper {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            overflow-y: auto;
+            overflow-y: auto; /* Permite scroll solo en los inputs si la pantalla es chica */
+            flex: 1;          /* CLAVE: Empuja el contenido de abajo hacia el fondo */
+            padding-right: 5px; 
+            min-height: 100px; /* Evita que desaparezca en pantallas muy chicas */
         }
 
         .control-group { display: flex; flex-direction: column; gap: 0.6rem; }
@@ -112,11 +118,47 @@
             background-color: var(--bg-hover);
         }
 
-        /* Inputs numéricos planos */
         input[type="number"] { font-family: 'JetBrains Mono', monospace; }
         input[type=number]::-webkit-outer-spin-button,
         input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
+
+        /* --- DONATION BUTTON (Bottom Left) --- */
+        .donation-container {
+            margin-top: auto; /* Refuerzo para asegurar que esté al fondo */
+            padding-top: 1.5rem;
+            flex-shrink: 0;
+            border-top: 1px solid var(--border); /* Separador visual */
+        }
+        
+        /* Estilo Buy Me a Coffee (Amarillo Global) */
+        .bmc-button {
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px;
+            background-color: #FFDD00; 
+            color: #000000 !important; 
+            text-decoration: none;
+            padding: 0.8rem; 
+            border-radius: 8px; 
+            font-weight: 700; 
+            font-size: 0.9rem;
+            transition: transform 0.2s, filter 0.2s; 
+            box-shadow: 0 4px 12px rgba(255, 221, 0, 0.2);
+            font-family: 'Inter', sans-serif;
+            width: 100%; /* Botón ancho completo */
+        }
+
+        .bmc-button:hover { 
+            filter: brightness(1.05); 
+            transform: translateY(-1px); 
+            color: #000000;
+        }
+        
+        .donation-text { font-size: 0.7rem; color: var(--text-dim); text-align: center; margin-top: 0.8rem; line-height: 1.4; }
+        .donation-text strong { color: var(--text-muted); }
+
 
         /* --- MAIN CONTENT --- */
         .main-content {
@@ -127,7 +169,7 @@
             position: relative;
         }
 
-        /* --- TABLE STYLES & SORTING --- */
+        /* --- TABLE STYLES --- */
         .table-container {
             flex-grow: 1;
             overflow-y: auto;
@@ -159,10 +201,7 @@
             transition: color 0.2s, background 0.2s;
         }
 
-        th:hover {
-            color: var(--text-main);
-            background-color: var(--bg-hover);
-        }
+        th:hover { color: var(--text-main); background-color: var(--bg-hover); }
 
         .th-content { display: flex; align-items: center; gap: 6px; }
         th.text-right .th-content { justify-content: flex-end; }
@@ -185,7 +224,6 @@
 
         tr:hover td { background-color: var(--bg-hover); }
 
-        /* Highlight Best Row */
         .row-best { background: linear-gradient(90deg, rgba(234, 179, 8, 0.15) 0%, transparent 80%); }
         .row-best td { border-top: 1px solid rgba(234, 179, 8, 0.2); border-bottom: 1px solid rgba(234, 179, 8, 0.2); }
         .row-best td:first-child { border-left: 3px solid var(--r-legendary); }
@@ -195,7 +233,6 @@
             margin-right: 8px; letter-spacing: 0.05em; vertical-align: middle;
         }
 
-        /* Typography & Components */
         .location-tag { color: var(--text-muted); font-weight: 500; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
         .row-best .location-tag { color: var(--text-main); font-weight: 600; }
         .mineral-name { font-weight: 600; font-size: 0.95rem; color: var(--text-main); text-decoration: none; }
@@ -207,7 +244,6 @@
             min-width: 75px; background: rgba(255,255,255,0.05);
         }
 
-        /* Rarity Colors */
         .type-common { color: var(--r-common); border: 1px solid rgba(156, 163, 175, 0.3); }
         .type-uncommon { color: var(--r-uncommon); border: 1px solid rgba(52, 211, 153, 0.3); }
         .type-rare { color: var(--r-rare); border: 1px solid rgba(96, 165, 250, 0.3); }
@@ -218,7 +254,6 @@
 
         .val-text { font-family: 'JetBrains Mono', monospace; color: var(--text-muted); font-size: 0.85rem; }
         
-        /* Effort Column */
         .prob-cell { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
         .batches-count { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.25rem; color: var(--text-main); line-height: 1.1; }
         .batches-label { font-size: 0.7rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 2px; }
@@ -227,19 +262,6 @@
         .effort-mid { color: var(--accent); }
         .effort-hard { color: var(--r-legendary); }
         .effort-insane { color: var(--r-exotic); }
-
-        /* Donations */
-        .donation-container { margin-top: auto; padding-top: 1rem; }
-        .donation-divider { height: 1px; background: var(--border); margin-bottom: 1.5rem; width: 100%; }
-        .kofi-button {
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            background-color: #29abe0; color: white; text-decoration: none;
-            padding: 0.8rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem;
-            transition: transform 0.2s, filter 0.2s; box-shadow: 0 4px 12px rgba(41, 171, 224, 0.2);
-        }
-        .kofi-button:hover { filter: brightness(1.1); transform: translateY(-1px); }
-        .donation-text { font-size: 0.7rem; color: var(--text-dim); text-align: center; margin-top: 0.8rem; line-height: 1.4; }
-        .donation-text strong { color: var(--text-muted); }
 
         /* Error */
         #error-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-app); display: none; justify-content: center; align-items: center; z-index: 100; }
@@ -250,6 +272,7 @@
             body { flex-direction: column; overflow: auto; }
             .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
             .table-container { overflow-x: auto; }
+            .controls-wrapper { flex: none; overflow-y: visible; } 
         }
     </style>
 </head>
@@ -298,11 +321,11 @@
         </div>
 
         <div class="donation-container">
-            <div class="donation-divider"></div>
-            <a href="https://ko-fi.com/TU_USUARIO_AQUI" target="_blank" class="kofi-button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
-                <span>Buy me a Coffee</span>
+            <a href="https://buymeacoffee.com/facur33" target="_blank" class="bmc-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#000000"><path d="M20.216 6.415l-.132-.666c-.119-.596-.385-1.135-.77-1.566-.383-.43-.88-.745-1.432-.903L9.23 1.022C7.984.753 6.68 1.01 5.605 1.732c-1.075.72-1.755 1.844-1.866 3.08l-.157.837c-.087.465.19.92.655 1.007.465.087.92-.19.987-.642l.16-.836c.065-.73.467-1.394 1.1-1.818.636-.425 1.407-.577 2.144-.418l8.65 1.868c.27.077.513.23.7.44.19.212.32.476.378.768l.13.666c.057.3.027.608-.087.89-.114.28-.304.517-.55.684L4.352 15.96c-1.19 1.065-1.72 2.693-1.39 4.26.33 1.566 1.423 2.84 2.864 3.34l.545.19c1.44.502 3.03.18 4.22-1.036l.017-.018c.183-.187.33-.395.44-.62.11-.223.17-.464.178-.712.007-.247-.037-.492-.13-.722-.09-.23-.224-.436-.39-.61l-.016.016c-.704.72-1.644.91-2.494.613l-.544-.19c-.85-.295-1.497-1.048-1.692-1.973-.195-.926.117-1.888.82-2.518L19.17 9.12c.74-.497 1.31-1.21 1.61-2.02.3-.812.28-1.703-.06-2.506l-.504 1.88-.06.223zM19.7 13.8c.387.386 1.013.386 1.4 0l2.2-2.2c.387-.387.387-1.013 0-1.4-.387-.387-1.013-.387-1.4 0l-2.2 2.2c-.387.387-.387 1.013 0 1.4z"/></svg>
+                <span>Buy me a coffee</span>
             </a>
+            
             <p class="donation-text">
                 Free tool by <strong>facur33</strong>.<br>
                 Server costs are on me! ❤️

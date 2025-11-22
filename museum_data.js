@@ -115,19 +115,19 @@ const museumData = {
     },
     modifiers: {
         "None": { stats: {} },
-        "Treasured": { stats: { "Luck": 0.05 } },
-        "Voidtorn": { stats: { "Luck": 0.05, "Capacity": 0.05 } },
-        "Electrified": { stats: { "Dig Speed": 0.05, "Shake Speed": 0.05 } },
-        "Iridescent": { stats: { "Luck": 0.05 } },
-        "Crystalline": { stats: { "Size Boost": 0.05 } },
-        "Irradiated": { stats: { "Modifier Boost": 0.05 } },
-        "Scorching": { stats: { "Dig Strength": 0.05 } },
-        "Glowing": { stats: { "Shake Speed": 0.05 } },
-        "Pure": { stats: { "Dig Speed": 0.05 } },
-        "Shiny": { stats: { "Shake Strength": 0.05 } }
+        "Treasured": { stats: { "Luck": 0.0371 } }, // 13 / 350
+        "Voidtorn": { stats: { "Luck": 0.0314, "Capacity": 0.0314 } }, // 11 / 350
+        "Electrified": { stats: { "Dig Speed": 0.0143, "Shake Speed": 0.0143 } }, // 5 / 350
+        "Iridescent": { stats: { "Luck": 0.01 } }, // 3.5 / 350
+        "Crystalline": { stats: { "Size Boost": 0.0086 } }, // 3 / 350
+        "Irradiated": { stats: { "Modifier Boost": 0.0071 } }, // 2.5 / 350
+        "Scorching": { stats: { "Dig Strength": 0.0057 } }, // 2 / 350
+        "Glowing": { stats: { "Shake Speed": 0.0046 } }, // 1.6 / 350
+        "Pure": { stats: { "Dig Speed": 0.0039 } }, // 1.35 / 350
+        "Shiny": { stats: { "Shake Strength": 0.0034 } } // 1.2 / 350
     },
     presets: {
-        "Luck": {
+        "Max Luck": {
             "common_0": { ore: "Gold", modifier: "Treasured", weight: 20 },
             "common_1": { ore: "Platinum", modifier: "Treasured", weight: 32 },
             "common_2": { ore: "Silver", modifier: "Treasured", weight: 36 },
@@ -147,7 +147,7 @@ const museumData = {
             "mythic_1": { ore: "Pink Diamond", modifier: "Treasured", weight: 20 },
             "exotic_0": { ore: "Vineheart", modifier: "Treasured", weight: 40 }
         },
-        "Capacity": {
+        "Max Capacity": {
             "common_0": { ore: "Pyrite", modifier: "Voidtorn", weight: 55 },
             "common_1": { ore: "Seashell", modifier: "Voidtorn", weight: 19 },
             "common_2": { ore: "Pearl", modifier: "Voidtorn", weight: 19 },
@@ -167,7 +167,27 @@ const museumData = {
             "mythic_1": { ore: "Vortessence", modifier: "Voidtorn", weight: 20 },
             "exotic_0": { ore: "Voidstone", modifier: "Voidtorn", weight: 20 }
         },
-        "Selling": {
+        "Max Dig Speed": {
+            "common_0": { ore: "Amethyst", modifier: "Electrified", weight: 16 },
+            "common_1": { ore: "Blue Ice", modifier: "Electrified", weight: 39 },
+            "common_2": { ore: "Platinum", modifier: "Electrified", weight: 32 },
+            "uncommon_0": { ore: "Sapphire", modifier: "Electrified", weight: 21 },
+            "uncommon_1": { ore: "Titanium", modifier: "Electrified", weight: 40 },
+            "uncommon_2": { ore: "Topaz", modifier: "Electrified", weight: 22 },
+            "rare_0": { ore: "Azuralite", modifier: "Electrified", weight: 30 },
+            "rare_1": { ore: "Glacial Quartz", modifier: "Electrified", weight: 42 },
+            "rare_2": { ore: "Lapis Lazuli", modifier: "Electrified", weight: 32 },
+            "epic_0": { ore: "Aurorite", modifier: "Electrified", weight: 30 },
+            "epic_1": { ore: "Borealite", modifier: "Electrified", weight: 20 },
+            "epic_2": { ore: "Cobalt", modifier: "Electrified", weight: 38 },
+            "legendary_0": { ore: "Aetherite", modifier: "Electrified", weight: 20 },
+            "legendary_1": { ore: "Aquamarine", modifier: "Electrified", weight: 20 },
+            "legendary_2": { ore: "Lost Soul", modifier: "Electrified", weight: 20 },
+            "mythic_0": { ore: "Inferlume", modifier: "Electrified", weight: 20 },
+            "mythic_1": { ore: "Pink Diamond", modifier: "Electrified", weight: 20 },
+            "exotic_0": { ore: "Umbrite", modifier: "Electrified", weight: 30 }
+        },
+        "Max Sell Boost": {
             "common_0": { ore: "Gold", modifier: "None", weight: 20 },
             "common_1": { ore: "Platinum", modifier: "None", weight: 32 },
             "common_2": { ore: "Silver", modifier: "None", weight: 36 },
@@ -184,10 +204,30 @@ const museumData = {
             "legendary_1": { ore: "Tourmaline", modifier: "None", weight: 25 },
             "legendary_2": { ore: "Aquamarine", modifier: "None", weight: 20 },
             "mythic_0": { ore: "Radiant Gold", modifier: "None", weight: 60 },
-            "mythic_1": { ore: "Red Beryl", modifier: "None", weight: 20 },
+            "mythic_1": { ore: "Pink Diamond", modifier: "None", weight: 20 },
             "exotic_0": { ore: "Dinosaur Skull", modifier: "None", weight: 100 }
         },
-        "Mixed (Luck & Cap)": {
+        "Balanced (All Stats)": {
+            "common_0": { ore: "Gold", modifier: "Treasured", weight: 20 },
+            "common_1": { ore: "Amethyst", modifier: "Electrified", weight: 16 },
+            "common_2": { ore: "Pyrite", modifier: "Voidtorn", weight: 55 },
+            "uncommon_0": { ore: "Sapphire", modifier: "Electrified", weight: 21 },
+            "uncommon_1": { ore: "Titanium", modifier: "Electrified", weight: 40 },
+            "uncommon_2": { ore: "Topaz", modifier: "Voidtorn", weight: 22 },
+            "rare_0": { ore: "Peridot", modifier: "Treasured", weight: 20 },
+            "rare_1": { ore: "Azuralite", modifier: "Electrified", weight: 30 },
+            "rare_2": { ore: "Silver Clamshell", modifier: "Voidtorn", weight: 21 },
+            "epic_0": { ore: "Emerald", modifier: "Treasured", weight: 20 },
+            "epic_1": { ore: "Cobalt", modifier: "Electrified", weight: 38 },
+            "epic_2": { ore: "Ammonite Fossil", modifier: "Voidtorn", weight: 49 },
+            "legendary_0": { ore: "Diamond", modifier: "Treasured", weight: 20 },
+            "legendary_1": { ore: "Aetherite", modifier: "Electrified", weight: 20 },
+            "legendary_2": { ore: "Catseye", modifier: "Voidtorn", weight: 20 },
+            "mythic_0": { ore: "Prismara", modifier: "Treasured", weight: 20 },
+            "mythic_1": { ore: "Vortessence", modifier: "Voidtorn", weight: 20 },
+            "exotic_0": { ore: "Vineheart", modifier: "Treasured", weight: 40 }
+        },
+        "Luck & Capacity": {
             "common_0": { ore: "Gold", modifier: "Voidtorn", weight: 20 },
             "common_1": { ore: "Pyrite", modifier: "Treasured", weight: 55 },
             "common_2": { ore: "Seashell", modifier: "Treasured", weight: 19 },
@@ -196,7 +236,7 @@ const museumData = {
             "uncommon_2": { ore: "Sapphire", modifier: "Treasured", weight: 21 },
             "rare_0": { ore: "Peridot", modifier: "Voidtorn", weight: 20 },
             "rare_1": { ore: "Amber", modifier: "Treasured", weight: 21 },
-            "rare_2": { ore: "Diopside", modifier: "Voidtorn", weight: 21 },
+            "rare_2": { ore: "Silver Clamshell", modifier: "Voidtorn", weight: 21 },
             "epic_0": { ore: "Emerald", modifier: "Voidtorn", weight: 20 },
             "epic_1": { ore: "Ammonite Fossil", modifier: "Treasured", weight: 49 },
             "epic_2": { ore: "Golden Pearl", modifier: "Treasured", weight: 19 },
@@ -207,25 +247,85 @@ const museumData = {
             "mythic_1": { ore: "Vortessence", modifier: "Treasured", weight: 20 },
             "exotic_0": { ore: "Voidstone", modifier: "Voidtorn", weight: 20 }
         },
-        "Best (Balanced)": {
-            "common_0": { ore: "Gold", modifier: "Treasured", weight: 20 },
-            "common_1": { ore: "Amethyst", modifier: "Electrified", weight: 16 },
-            "common_2": { ore: "Platinum", modifier: "Electrified", weight: 32 },
+        "Speed (Dig & Shake)": {
+            "common_0": { ore: "Amethyst", modifier: "Electrified", weight: 16 },
+            "common_1": { ore: "Pearl", modifier: "Electrified", weight: 19 },
+            "common_2": { ore: "Silver", modifier: "Electrified", weight: 36 },
             "uncommon_0": { ore: "Sapphire", modifier: "Electrified", weight: 21 },
             "uncommon_1": { ore: "Titanium", modifier: "Electrified", weight: 40 },
-            "uncommon_2": { ore: "Topaz", modifier: "Voidtorn", weight: 22 },
-            "rare_0": { ore: "Peridot", modifier: "Treasured", weight: 20 },
-            "rare_1": { ore: "Azuralite", modifier: "Electrified", weight: 30 },
-            "rare_2": { ore: "Glacial Quartz", modifier: "Electrified", weight: 42 },
-            "epic_0": { ore: "Emerald", modifier: "Treasured", weight: 20 },
+            "uncommon_2": { ore: "Topaz", modifier: "Electrified", weight: 22 },
+            "rare_0": { ore: "Azuralite", modifier: "Electrified", weight: 30 },
+            "rare_1": { ore: "Glacial Quartz", modifier: "Electrified", weight: 42 },
+            "rare_2": { ore: "Silver Clamshell", modifier: "Electrified", weight: 21 },
+            "epic_0": { ore: "Borealite", modifier: "Electrified", weight: 20 },
             "epic_1": { ore: "Cobalt", modifier: "Electrified", weight: 38 },
-            "epic_2": { ore: "Aurorite", modifier: "Electrified", weight: 30 },
-            "legendary_0": { ore: "Diamond", modifier: "Treasured", weight: 20 },
-            "legendary_1": { ore: "Aetherite", modifier: "Electrified", weight: 20 },
-            "legendary_2": { ore: "Aquamarine", modifier: "Electrified", weight: 20 },
-            "mythic_0": { ore: "Pink Diamond", modifier: "Treasured", weight: 20 },
-            "mythic_1": { ore: "Prismara", modifier: "Voidtorn", weight: 20 },
-            "exotic_0": { ore: "Vineheart", modifier: "Treasured", weight: 40 }
+            "epic_2": { ore: "Opal", modifier: "Electrified", weight: 20 },
+            "legendary_0": { ore: "Aetherite", modifier: "Electrified", weight: 20 },
+            "legendary_1": { ore: "Starshine", modifier: "Electrified", weight: 20 },
+            "legendary_2": { ore: "Specterite", modifier: "Electrified", weight: 10 },
+            "mythic_0": { ore: "Inferlume", modifier: "Electrified", weight: 20 },
+            "mythic_1": { ore: "Pink Diamond", modifier: "Electrified", weight: 20 },
+            "exotic_0": { ore: "Umbrite", modifier: "Electrified", weight: 30 }
+        },
+        "Size Boost": {
+            "common_0": { ore: "Copper", modifier: "Crystalline", weight: 60 },
+            "common_1": { ore: "Obsidian", modifier: "Crystalline", weight: 30 },
+            "common_2": { ore: "Gold", modifier: "Crystalline", weight: 20 },
+            "uncommon_0": { ore: "Zircon", modifier: "Crystalline", weight: 15 },
+            "uncommon_1": { ore: "Rock Candy", modifier: "Crystalline", weight: 45 },
+            "uncommon_2": { ore: "Sapphire", modifier: "Crystalline", weight: 21 },
+            "rare_0": { ore: "Peridot", modifier: "Crystalline", weight: 20 },
+            "rare_1": { ore: "Amber", modifier: "Crystalline", weight: 21 },
+            "rare_2": { ore: "Pyrelith", modifier: "Crystalline", weight: 30 },
+            "epic_0": { ore: "Osmium", modifier: "Crystalline", weight: 80 },
+            "epic_1": { ore: "Ashvein", modifier: "Crystalline", weight: 20 },
+            "epic_2": { ore: "Bone", modifier: "Crystalline", weight: 47 },
+            "legendary_0": { ore: "Volcanic Key", modifier: "Crystalline", weight: 20 },
+            "legendary_1": { ore: "Fire Opal", modifier: "Crystalline", weight: 20 },
+            "legendary_2": { ore: "Dragon Bone", modifier: "Crystalline", weight: 50 },
+            "mythic_0": { ore: "Painite", modifier: "Crystalline", weight: 20 },
+            "mythic_1": { ore: "Star Garnet", modifier: "Crystalline", weight: 20 },
+            "exotic_0": { ore: "Bloodstone", modifier: "Crystalline", weight: 40 }
+        },
+        "Strength (Dig & Shake)": {
+            "common_0": { ore: "Copper", modifier: "Scorching", weight: 60 },
+            "common_1": { ore: "Gold", modifier: "Scorching", weight: 20 },
+            "common_2": { ore: "Silver", modifier: "Shiny", weight: 36 },
+            "uncommon_0": { ore: "Neodymium", modifier: "Shiny", weight: 40 },
+            "uncommon_1": { ore: "Smoky Quartz", modifier: "Shiny", weight: 22 },
+            "uncommon_2": { ore: "Sapphire", modifier: "Scorching", weight: 21 },
+            "rare_0": { ore: "Meteoric Iron", modifier: "Shiny", weight: 40 },
+            "rare_1": { ore: "Ruby", modifier: "Shiny", weight: 20 },
+            "rare_2": { ore: "Peridot", modifier: "Scorching", weight: 20 },
+            "epic_0": { ore: "Mercury", modifier: "Shiny", weight: 76 },
+            "epic_1": { ore: "Emerald", modifier: "Scorching", weight: 20 },
+            "epic_2": { ore: "Lightshard", modifier: "Scorching", weight: 20 },
+            "legendary_0": { ore: "Rose Gold", modifier: "Shiny", weight: 40 },
+            "legendary_1": { ore: "Diamond", modifier: "Scorching", weight: 20 },
+            "legendary_2": { ore: "Aquamarine", modifier: "Scorching", weight: 20 },
+            "mythic_0": { ore: "Mythril", modifier: "Shiny", weight: 60 },
+            "mythic_1": { ore: "Prismara", modifier: "Scorching", weight: 20 },
+            "exotic_0": { ore: "Cryonic Artifact", modifier: "Scorching", weight: 20 }
+        },
+        "Modifier Boost": {
+            "common_0": { ore: "Gold", modifier: "Irradiated", weight: 20 },
+            "common_1": { ore: "Platinum", modifier: "Irradiated", weight: 32 },
+            "common_2": { ore: "Silver", modifier: "Irradiated", weight: 36 },
+            "uncommon_0": { ore: "Malachite", modifier: "Irradiated", weight: 18 },
+            "uncommon_1": { ore: "Sapphire", modifier: "Irradiated", weight: 21 },
+            "uncommon_2": { ore: "Titanium", modifier: "Irradiated", weight: 40 },
+            "rare_0": { ore: "Jade", modifier: "Irradiated", weight: 40 },
+            "rare_1": { ore: "Onyx", modifier: "Irradiated", weight: 32 },
+            "rare_2": { ore: "Diopside", modifier: "Irradiated", weight: 21 },
+            "epic_0": { ore: "Glowmoss", modifier: "Irradiated", weight: 60 },
+            "epic_1": { ore: "Emerald", modifier: "Irradiated", weight: 20 },
+            "epic_2": { ore: "Lightshard", modifier: "Irradiated", weight: 20 },
+            "legendary_0": { ore: "Uranium", modifier: "Irradiated", weight: 59 },
+            "legendary_1": { ore: "Diamond", modifier: "Irradiated", weight: 20 },
+            "legendary_2": { ore: "Aquamarine", modifier: "Irradiated", weight: 20 },
+            "mythic_0": { ore: "Prismara", modifier: "Irradiated", weight: 20 },
+            "mythic_1": { ore: "Pink Diamond", modifier: "Irradiated", weight: 20 },
+            "exotic_0": { ore: "Vineheart", modifier: "Irradiated", weight: 40 }
         }
     }
 };

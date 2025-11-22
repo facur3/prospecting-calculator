@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Check Database existence with retry
     const checkDataInterval = setInterval(() => {
-        if (typeof scrapedDatabase !== 'undefined' && typeof museumData !== 'undefined') {
+        if (typeof scrapedDatabase !== 'undefined' && typeof museumData !== 'undefined' && typeof equipmentData !== 'undefined') {
             clearInterval(checkDataInterval);
             document.getElementById('error-overlay').style.display = 'none';
             init();
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Timeout to show error if data never loads (e.g. 5 seconds)
     setTimeout(() => {
-        if (typeof scrapedDatabase === 'undefined' || typeof museumData === 'undefined') {
+        if (typeof scrapedDatabase === 'undefined' || typeof museumData === 'undefined' || typeof equipmentData === 'undefined') {
             document.getElementById('error-overlay').style.display = 'flex';
             clearInterval(checkDataInterval);
         }
@@ -452,6 +452,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tabs: document.querySelectorAll('.nav-tab'),
         planBtns: document.querySelectorAll('.plan-btn'),
         presetsBtn: document.getElementById('presets-btn'),
+        renameBtn: document.getElementById('rename-plan-btn'),
+        clearBtn: document.getElementById('clear-plan-btn'),
         views: {
             calculator: {
                 controls: document.getElementById('view-calculator-controls'),
@@ -465,6 +467,143 @@ document.addEventListener('DOMContentLoaded', () => {
         museumGrid: document.getElementById('museum-grid'),
         statsGrid: document.getElementById('museum-stats-grid')
     };
+
+    // Rename Logic
+    museumUI.renameBtn.addEventListener('click', () => {
+        openRenameModal();
+    });
+
+    function openRenameModal() {
+        if (currentModal) currentModal.remove();
+
+        const modal = document.createElement('div');
+        modal.className = 'selection-modal';
+
+        const content = document.createElement('div');
+        content.className = 'modal-content';
+
+        const header = document.createElement('div');
+        header.className = 'modal-header';
+        header.innerHTML = `
+            <div class="modal-title">Rename Plan</div>
+            <button class="close-modal">×</button>
+        `;
+
+        const body = document.createElement('div');
+        body.className = 'modal-body';
+
+        const currentName = museumPlans[currentPlanId].name;
+        body.innerHTML = `
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-main);">Plan Name:</label>
+                <input type="text" id="rename-input" value="${currentName}" 
+                    style="width: 100%; padding: 0.5rem; background: var(--bg-card); color: var(--text-main); 
+                    border: 1px solid var(--border); border-radius: 4px; font-size: 1rem;">
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button class="cancel-btn" style="padding: 0.5rem 1rem; background: var(--bg-card); color: var(--text-main); 
+                    border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">Cancel</button>
+                <button class="confirm-btn" style="padding: 0.5rem 1rem; background: var(--z-nature); color: white; 
+                    border: none; border-radius: 4px; cursor: pointer;">Rename</button>
+            </div>
+        `;
+
+        content.appendChild(header);
+        content.appendChild(body);
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+        currentModal = modal;
+
+        const input = body.querySelector('#rename-input');
+        const confirmBtn = body.querySelector('.confirm-btn');
+        const cancelBtn = body.querySelector('.cancel-btn');
+
+        input.focus();
+        input.select();
+
+        const doRename = () => {
+            const newName = input.value.trim();
+            if (newName && newName !== "") {
+                museumPlans[currentPlanId].name = newName;
+                updatePlanButtons();
+                saveMuseumState();
+                modal.remove();
+            }
+        };
+
+        confirmBtn.addEventListener('click', doRename);
+        cancelBtn.addEventListener('click', () => modal.remove());
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') doRename();
+        });
+
+        header.querySelector('.close-modal').addEventListener('click', () => modal.remove());
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
+
+    // Clear Logic
+    museumUI.clearBtn.addEventListener('click', () => {
+        openClearModal();
+    });
+
+    function openClearModal() {
+        if (currentModal) currentModal.remove();
+
+        const modal = document.createElement('div');
+        modal.className = 'selection-modal';
+
+        const content = document.createElement('div');
+        content.className = 'modal-content';
+
+        const header = document.createElement('div');
+        header.className = 'modal-header';
+        header.innerHTML = `
+            <div class="modal-title">Clear Plan</div>
+            <button class="close-modal">×</button>
+        `;
+
+        const body = document.createElement('div');
+        body.className = 'modal-body';
+        body.innerHTML = `
+            <div style="margin-bottom: 1.5rem; color: var(--text-main);">
+                Are you sure you want to clear all minerals from "${museumPlans[currentPlanId].name}"?
+                <div style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">This action cannot be undone.</div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button class="cancel-btn" style="padding: 0.5rem 1rem; background: var(--bg-card); color: var(--text-main); 
+                    border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">Cancel</button>
+                <button class="confirm-btn" style="padding: 0.5rem 1rem; background: #dc3545; color: white; 
+                    border: none; border-radius: 4px; cursor: pointer;">Clear Plan</button>
+            </div>
+        `;
+
+        content.appendChild(header);
+        content.appendChild(body);
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+        currentModal = modal;
+
+        const confirmBtn = body.querySelector('.confirm-btn');
+        const cancelBtn = body.querySelector('.cancel-btn');
+
+        confirmBtn.addEventListener('click', () => {
+            museumPlans[currentPlanId].slots = {};
+            museumState = museumPlans[currentPlanId].slots;
+            saveMuseumState();
+            renderMuseum();
+            modal.remove();
+        });
+
+        cancelBtn.addEventListener('click', () => modal.remove());
+        header.querySelector('.close-modal').addEventListener('click', () => modal.remove());
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
+
+    // Presets Logic
 
     // Presets Logic
     museumUI.presetsBtn.addEventListener('click', () => {
@@ -586,17 +725,30 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.classList.add('active');
 
             if (target === 'calculator') {
-                museumUI.views.calculator.controls.style.display = 'grid';
+                museumUI.views.calculator.controls.style.display = 'block';
                 museumUI.views.calculator.content.style.display = 'block';
                 museumUI.views.museum.controls.style.display = 'none';
                 museumUI.views.museum.content.style.display = 'none';
-            } else {
+                equipmentUI.views.equipment.controls.style.display = 'none';
+                equipmentUI.views.equipment.content.style.display = 'none';
+            } else if (target === 'museum') {
                 museumUI.views.calculator.controls.style.display = 'none';
                 museumUI.views.calculator.content.style.display = 'none';
                 museumUI.views.museum.controls.style.display = 'block';
-                museumUI.views.museum.content.style.display = 'block';
-                // Force render
-                setTimeout(renderMuseum, 10);
+                museumUI.views.museum.content.style.display = 'grid';
+                equipmentUI.views.equipment.controls.style.display = 'none';
+                equipmentUI.views.equipment.content.style.display = 'none';
+                // Force render to ensure it appears
+                renderMuseum();
+            } else if (target === 'equipment') {
+                museumUI.views.calculator.controls.style.display = 'none';
+                museumUI.views.calculator.content.style.display = 'none';
+                museumUI.views.museum.controls.style.display = 'none';
+                museumUI.views.museum.content.style.display = 'none';
+                equipmentUI.views.equipment.controls.style.display = 'block';
+                equipmentUI.views.equipment.content.style.display = 'grid';
+                // Render equipment planner
+                renderEquipment();
             }
         });
     });
@@ -614,15 +766,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (museumUI.museumGrid.innerHTML.trim() !== '') {
-            // Already rendered, but maybe we need to update specific slots?
-            // For simplicity, let's just re-calculate stats. 
-            // If we need to re-render the DOM completely, we should clear innerHTML.
-            // But for now let's just return if built to avoid dupes.
-            // Actually, let's just ensure stats are up to date.
-            calculateMuseumStats();
-            return;
-        }
+        // Clear and re-render to ensure fresh state
+        museumUI.museumGrid.innerHTML = '';
 
         const rarities = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'exotic'];
 
@@ -706,27 +851,36 @@ document.addEventListener('DOMContentLoaded', () => {
             const oreData = museumData.ores[state.ore];
             const modData = state.modifier && state.modifier !== 'None' ? museumData.modifiers[state.modifier] : null;
 
-            // Calculate Efficiency
+            // Calculate Efficiency (using square root)
             const userWeight = parseFloat(state.weight) || 0;
             const targetWeight = oreData.minKG || 999;
-            let efficiency = userWeight / targetWeight;
+            let efficiency = Math.sqrt(userWeight / targetWeight);
             if (efficiency > 1) efficiency = 1;
 
             const effPercent = Math.floor(efficiency * 100);
             const progressColor = efficiency >= 1 ? 'var(--z-nature)' : 'var(--z-sand)';
 
-            // Format stats
-            let statsHtml = '';
+            // Format ore stats
+            let oreStatsHtml = '';
             for (const [stat, val] of Object.entries(oreData.stats)) {
                 const finalVal = val * efficiency;
-                statsHtml += `<div>${stat}: +${finalVal.toFixed(3)}x</div>`;
+                oreStatsHtml += `<div>${stat}: +${finalVal.toFixed(3)}x</div>`;
+            }
+
+            // Format modifier stats (in different color)
+            let modStatsHtml = '';
+            if (modData && modData.stats) {
+                for (const [stat, val] of Object.entries(modData.stats)) {
+                    modStatsHtml += `<div style="color: var(--z-amethyst);">${stat}: +${val.toFixed(3)}x</div>`;
+                }
             }
 
             slot.innerHTML = `
                 <div class="remove-btn">×</div>
                 <div class="slot-content" style="justify-content:flex-start; padding-top:1rem;">
                     <div class="ore-name">${state.ore}</div>
-                    <div class="ore-bonus">${statsHtml}</div>
+                    <div class="ore-bonus">${oreStatsHtml}</div>
+                    ${modStatsHtml ? `<div class="ore-bonus" style="margin-top:4px;">${modStatsHtml}</div>` : ''}
                     
                     <div style="width:100%; margin-top:8px; font-size:0.7rem; color:var(--text-muted);">
                         <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
@@ -914,7 +1068,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const minKG = oreInfo?.minKG || 999;
                 const userWeight = slot.weight || 0;
 
-                let efficiency = userWeight / minKG;
+                // Square root efficiency curve (gives better bonuses for smaller ores)
+                let efficiency = Math.sqrt(userWeight / minKG);
                 if (efficiency > 1) efficiency = 1;
                 if (efficiency < 0) efficiency = 0;
 
@@ -950,6 +1105,442 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="stat-value">+${val.toFixed(4)}x</span>
             `;
             museumUI.statsGrid.appendChild(item);
+        });
+    }
+
+    // --- EQUIPMENT PLANNER LOGIC ---
+
+    let currentEquipLoadout = 1;
+    // Structure: { 1: { name: "Loadout 1", equipment: { rings: [null...], necklace: null, charm: null } }, ... }
+    let equipmentLoadouts = JSON.parse(localStorage.getItem('equipmentLoadouts')) || {
+        1: { name: "Loadout 1", equipment: { rings: Array(8).fill(null), necklace: null, charm: null } },
+        2: { name: "Loadout 2", equipment: { rings: Array(8).fill(null), necklace: null, charm: null } },
+        3: { name: "Loadout 3", equipment: { rings: Array(8).fill(null), necklace: null, charm: null } }
+    };
+
+    // Migration for old structure if exists
+    if (equipmentLoadouts[1].equipment.ring !== undefined) {
+        Object.values(equipmentLoadouts).forEach(loadout => {
+            if (loadout.equipment.ring !== undefined) {
+                const oldRing = loadout.equipment.ring;
+                loadout.equipment = {
+                    rings: Array(8).fill(null),
+                    necklace: loadout.equipment.necklace,
+                    charm: loadout.equipment.charm
+                };
+                if (oldRing) loadout.equipment.rings[0] = oldRing;
+            }
+        });
+        localStorage.setItem('equipmentLoadouts', JSON.stringify(equipmentLoadouts));
+    }
+
+    let currentEquipmentState = equipmentLoadouts[currentEquipLoadout].equipment;
+
+    const equipmentUI = {
+        tabs: document.querySelectorAll('.nav-tab'),
+        loadoutBtns: document.querySelectorAll('.equip-plan-btn'),
+        renameBtn: document.getElementById('rename-equip-btn'),
+        clearBtn: document.getElementById('clear-equip-btn'),
+        views: {
+            equipment: {
+                controls: document.getElementById('view-equipment-controls'),
+                content: document.getElementById('view-equipment-content')
+            }
+        },
+        equipmentGrid: document.getElementById('equipment-grid'),
+        statsGrid: document.getElementById('equipment-stats-grid')
+    };
+
+    // Rename Loadout Logic
+    equipmentUI.renameBtn.addEventListener('click', () => {
+        openRenameEquipModal();
+    });
+
+    function openRenameEquipModal() {
+        if (currentModal) currentModal.remove();
+
+        const modal = document.createElement('div');
+        modal.className = 'selection-modal';
+
+        const content = document.createElement('div');
+        content.className = 'modal-content';
+
+        const header = document.createElement('div');
+        header.className = 'modal-header';
+        header.innerHTML = `
+            <div class="modal-title">Rename Loadout</div>
+            <button class="close-modal">×</button>
+        `;
+
+        const body = document.createElement('div');
+        body.className = 'modal-body';
+
+        const currentName = equipmentLoadouts[currentEquipLoadout].name;
+        body.innerHTML = `
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-main);">Loadout Name:</label>
+                <input type="text" id="rename-equip-input" value="${currentName}" 
+                    style="width: 100%; padding: 0.5rem; background: var(--bg-card); color: var(--text-main); 
+                    border: 1px solid var(--border); border-radius: 4px; font-size: 1rem;">
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button class="cancel-btn" style="padding: 0.5rem 1rem; background: var(--bg-card); color: var(--text-main); 
+                    border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">Cancel</button>
+                <button class="confirm-btn" style="padding: 0.5rem 1rem; background: var(--z-nature); color: white; 
+                    border: none; border-radius: 4px; cursor: pointer;">Rename</button>
+            </div>
+        `;
+
+        content.appendChild(header);
+        content.appendChild(body);
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+        currentModal = modal;
+
+        const input = body.querySelector('#rename-equip-input');
+        const confirmBtn = body.querySelector('.confirm-btn');
+        const cancelBtn = body.querySelector('.cancel-btn');
+
+        input.focus();
+        input.select();
+
+        const doRename = () => {
+            const newName = input.value.trim();
+            if (newName && newName !== "") {
+                equipmentLoadouts[currentEquipLoadout].name = newName;
+                updateLoadoutButtons();
+                saveEquipmentState();
+                modal.remove();
+            }
+        };
+
+        confirmBtn.addEventListener('click', doRename);
+        cancelBtn.addEventListener('click', () => modal.remove());
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') doRename();
+        });
+
+        header.querySelector('.close-modal').addEventListener('click', () => modal.remove());
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
+
+    // Clear Loadout Logic
+    equipmentUI.clearBtn.addEventListener('click', () => {
+        openClearEquipModal();
+    });
+
+    function openClearEquipModal() {
+        if (currentModal) currentModal.remove();
+
+        const modal = document.createElement('div');
+        modal.className = 'selection-modal';
+
+        const content = document.createElement('div');
+        content.className = 'modal-content';
+
+        const header = document.createElement('div');
+        header.className = 'modal-header';
+        header.innerHTML = `
+            <div class="modal-title">Clear Loadout</div>
+            <button class="close-modal">×</button>
+        `;
+
+        const body = document.createElement('div');
+        body.className = 'modal-body';
+        body.innerHTML = `
+            <div style="margin-bottom: 1.5rem; color: var(--text-main);">
+                Are you sure you want to clear all equipment from "${equipmentLoadouts[currentEquipLoadout].name}"?
+                <div style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">This action cannot be undone.</div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button class="cancel-btn" style="padding: 0.5rem 1rem; background: var(--bg-card); color: var(--text-main); 
+                    border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">Cancel</button>
+                <button class="confirm-btn" style="padding: 0.5rem 1rem; background: #dc3545; color: white; 
+                    border: none; border-radius: 4px; cursor: pointer;">Clear Loadout</button>
+            </div>
+        `;
+
+        content.appendChild(header);
+        content.appendChild(body);
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+        currentModal = modal;
+
+        const confirmBtn = body.querySelector('.confirm-btn');
+        const cancelBtn = body.querySelector('.cancel-btn');
+
+        confirmBtn.addEventListener('click', () => {
+            equipmentLoadouts[currentEquipLoadout].equipment = { rings: Array(8).fill(null), necklace: null, charm: null };
+            currentEquipmentState = equipmentLoadouts[currentEquipLoadout].equipment;
+            saveEquipmentState();
+            renderEquipment();
+            modal.remove();
+        });
+
+        cancelBtn.addEventListener('click', () => modal.remove());
+        header.querySelector('.close-modal').addEventListener('click', () => modal.remove());
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
+
+    // Initialize UI with correct names
+    function updateLoadoutButtons() {
+        equipmentUI.loadoutBtns.forEach(btn => {
+            const lid = btn.dataset.plan;
+            btn.textContent = equipmentLoadouts[lid].name;
+            if (parseInt(lid) === currentEquipLoadout) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+    updateLoadoutButtons();
+
+    // Loadout Switching
+    equipmentUI.loadoutBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const loadoutId = parseInt(btn.dataset.plan);
+            if (loadoutId === currentEquipLoadout) return;
+
+            currentEquipLoadout = loadoutId;
+            currentEquipmentState = equipmentLoadouts[currentEquipLoadout].equipment;
+
+            updateLoadoutButtons();
+            equipmentUI.equipmentGrid.innerHTML = '';
+            renderEquipment();
+        });
+    });
+
+    function saveEquipmentState() {
+        equipmentLoadouts[currentEquipLoadout].equipment = currentEquipmentState;
+        localStorage.setItem('equipmentLoadouts', JSON.stringify(equipmentLoadouts));
+        calculateEquipmentStats();
+    }
+
+    function renderEquipment() {
+        equipmentUI.equipmentGrid.innerHTML = '';
+
+        // --- RINGS SECTION ---
+        const ringGroup = document.createElement('div');
+        ringGroup.className = 'slot-group';
+        ringGroup.innerHTML = `<div class="slot-group-header"><div class="slot-group-title">Rings (Max 8)</div></div>`;
+
+        const ringsContainer = document.createElement('div');
+        ringsContainer.className = 'equipment-slots-container rings-container';
+
+        currentEquipmentState.rings.forEach((ringId, index) => {
+            const isPremium = index >= 6; // 7th and 8th are premium
+            const slot = createEquipmentSlot('Ring', 'rings', index, isPremium);
+            ringsContainer.appendChild(slot);
+        });
+        ringGroup.appendChild(ringsContainer);
+        equipmentUI.equipmentGrid.appendChild(ringGroup);
+
+        // --- NECKLACE SECTION ---
+        const necklaceGroup = document.createElement('div');
+        necklaceGroup.className = 'slot-group';
+        necklaceGroup.innerHTML = `<div class="slot-group-header"><div class="slot-group-title">Necklace</div></div>`;
+        const necklaceContainer = document.createElement('div');
+        necklaceContainer.className = 'equipment-slots-container';
+        necklaceContainer.appendChild(createEquipmentSlot('Necklace', 'necklace', null, false));
+        necklaceGroup.appendChild(necklaceContainer);
+        equipmentUI.equipmentGrid.appendChild(necklaceGroup);
+
+        // --- CHARM SECTION ---
+        const charmGroup = document.createElement('div');
+        charmGroup.className = 'slot-group';
+        charmGroup.innerHTML = `<div class="slot-group-header"><div class="slot-group-title">Charm</div></div>`;
+        const charmContainer = document.createElement('div');
+        charmContainer.className = 'equipment-slots-container';
+        charmContainer.appendChild(createEquipmentSlot('Charm', 'charm', null, false));
+        charmGroup.appendChild(charmContainer);
+        equipmentUI.equipmentGrid.appendChild(charmGroup);
+
+        calculateEquipmentStats();
+    }
+
+    function createEquipmentSlot(slotName, typeKey, index, isPremium) {
+        const selectedEquip = index !== null ? currentEquipmentState[typeKey][index] : currentEquipmentState[typeKey];
+
+        const slot = document.createElement('div');
+        slot.className = `equipment-slot ${selectedEquip ? 'filled' : ''} ${isPremium ? 'premium-slot' : ''}`;
+
+        if (isPremium) {
+            // Optional: Add visual indicator for premium
+            slot.style.borderColor = 'var(--r-legendary)';
+        }
+
+        if (selectedEquip) {
+            const equip = equipmentData.equipment[selectedEquip];
+            if (!equip) {
+                // Handle case where item ID might not exist in DB anymore
+                return slot;
+            }
+
+            // Build stats HTML
+            let statsHtml = '';
+            for (const [stat, values] of Object.entries(equip.stats)) {
+                const isNegative = values.max < 0 || values.min < 0;
+                const percent = values.percent ? '%' : '';
+                const badgeClass = isNegative ? 'stat-badge negative' : 'stat-badge';
+                statsHtml += `<span class="${badgeClass}">${stat}: ${values.min}–${values.s6max}${percent}</span>`;
+            }
+
+            // Cost badge
+            const costIcon = equip.costType === 'candy' ? '🍬' : '$';
+            const costClass = equip.costType === 'candy' ? 'cost-badge candy' : 'cost-badge';
+            const costHtml = `<span class="${costClass}">${costIcon} ${equip.cost.toLocaleString()}</span>`;
+
+            slot.innerHTML = `
+                <div class="remove-btn">×</div>
+                <div class="slot-label">${slotName} ${index !== null ? index + 1 : ''}</div>
+                <div class="equipment-name" style="color: var(--r-${equip.rarity})">${equip.name}</div>
+                <div class="equipment-stats">${statsHtml}</div>
+                ${costHtml}
+            `;
+
+            slot.querySelector('.remove-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (index !== null) {
+                    currentEquipmentState[typeKey][index] = null;
+                } else {
+                    currentEquipmentState[typeKey] = null;
+                }
+                saveEquipmentState();
+                renderEquipment();
+            });
+        } else {
+            slot.innerHTML = `
+                <div class="equipment-empty">
+                    <div class="equipment-empty-icon">+</div>
+                    <div>${slotName} ${index !== null ? index + 1 : ''}</div>
+                    ${isPremium ? '<div style="font-size:0.7rem; color:var(--r-legendary)">(Premium)</div>' : ''}
+                </div>
+            `;
+        }
+
+        slot.addEventListener('click', (e) => {
+            if (e.target.closest('.remove-btn')) return;
+            openEquipmentSelectionModal(slotName, typeKey, index);
+        });
+
+        return slot;
+    }
+
+    function openEquipmentSelectionModal(slotName, typeKey, index) {
+        if (currentModal) currentModal.remove();
+
+        const modal = document.createElement('div');
+        modal.className = 'selection-modal';
+
+        const content = document.createElement('div');
+        content.className = 'modal-content';
+
+        const header = document.createElement('div');
+        header.className = 'modal-header';
+        header.innerHTML = `
+            <div class="modal-title">Select ${slotName}</div>
+            <button class="close-modal">×</button>
+        `;
+
+        const body = document.createElement('div');
+        body.className = 'modal-body';
+
+        const rarities = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'exotic'];
+
+        rarities.forEach(rarity => {
+            const items = equipmentData.getBySlotAndRarity(slotName, rarity);
+
+            if (items.length > 0) {
+                const rarityHeader = document.createElement('div');
+                rarityHeader.className = 'selection-group-title';
+                rarityHeader.textContent = rarity.charAt(0).toUpperCase() + rarity.slice(1);
+                rarityHeader.style.color = `var(--r-${rarity})`;
+                body.appendChild(rarityHeader);
+
+                items.forEach(equip => {
+                    const item = document.createElement('div');
+                    item.className = 'selection-item';
+
+                    const statsStr = Object.keys(equip.stats).join(', ');
+                    item.innerHTML = `
+                        <span style="color:var(--r-${equip.rarity})">${equip.name}</span>
+                        <span style="font-size:0.75rem; color:var(--text-muted)">${statsStr}</span>
+                    `;
+
+                    item.addEventListener('click', () => {
+                        if (index !== null) {
+                            currentEquipmentState[typeKey][index] = equip.id;
+                        } else {
+                            currentEquipmentState[typeKey] = equip.id;
+                        }
+                        saveEquipmentState();
+                        renderEquipment();
+                        modal.remove();
+                    });
+
+                    body.appendChild(item);
+                });
+            }
+        });
+
+        content.appendChild(header);
+        content.appendChild(body);
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+        currentModal = modal;
+
+        header.querySelector('.close-modal').addEventListener('click', () => modal.remove());
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
+
+    function calculateEquipmentStats() {
+        const totalStats = {};
+
+        const addStats = (equipId) => {
+            if (!equipId) return;
+            const equip = equipmentData.equipment[equipId];
+            if (!equip) return;
+
+            for (const [stat, values] of Object.entries(equip.stats)) {
+                const percent = values.percent ? '%' : '';
+                const key = `${stat}${percent}`;
+
+                if (!totalStats[key]) {
+                    totalStats[key] = { min: 0, max: 0, s6max: 0, percent: values.percent || false };
+                }
+
+                totalStats[key].min += values.min;
+                totalStats[key].max += values.max;
+                totalStats[key].s6max += values.s6max;
+            }
+        };
+
+        currentEquipmentState.rings.forEach(addStats);
+        addStats(currentEquipmentState.necklace);
+        addStats(currentEquipmentState.charm);
+
+        equipmentUI.statsGrid.innerHTML = '';
+        const statKeys = Object.keys(totalStats).sort();
+
+        if (statKeys.length === 0) {
+            equipmentUI.statsGrid.innerHTML = '<div class="stat-item empty">No equipment equipped</div>';
+            return;
+        }
+
+        statKeys.forEach(statKey => {
+            const stat = totalStats[statKey];
+            const item = document.createElement('div');
+            item.className = 'stat-item';
+            const percent = stat.percent ? '%' : '';
+            item.innerHTML = `
+                <span class="stat-label">${statKey.replace('%', '')}</span>
+                <span class="stat-value">${stat.min.toFixed(1)}–${stat.s6max.toFixed(1)}${percent}</span>
+            `;
+            equipmentUI.statsGrid.appendChild(item);
         });
     }
 });

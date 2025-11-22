@@ -27,6 +27,7 @@
 
     <script src="database.js" onerror="document.getElementById('error-overlay').style.display='flex'"></script>
     <script src="museum_data.js"></script>
+    <script src="equipment_data.js"></script>
 
     <header class="top-panel">
         <div class="header-row">
@@ -41,6 +42,7 @@
             <div class="nav-tabs">
                 <button class="nav-tab active" data-tab="calculator">Calculator</button>
                 <button class="nav-tab" data-tab="museum">Museum Planner</button>
+                <button class="nav-tab" data-tab="equipment">Equipment Planner</button>
             </div>
 
             <div class="header-actions">
@@ -65,36 +67,42 @@
             </div>
         </div>
 
-        <div id="view-calculator-controls" class="controls-grid">
-            <div class="control-group">
-                <label>Suerte (Luck)</label>
-                <input type="number" class="custom-input" id="luck" value="1" min="0.1" step="0.1" placeholder="0">
-            </div>
+        <div id="view-calculator-controls" class="controls-columns">
+            <div class="control-column">
+                <div class="control-group">
+                    <label>Suerte (Luck)</label>
+                    <input type="number" class="custom-input" id="luck" value="1" min="0.1" step="0.1" placeholder="0">
+                </div>
 
-            <div class="control-group">
-                <label>Capacidad (Capacity)</label>
-                <input type="number" class="custom-input" id="capacity" value="50" min="1" placeholder="0">
-            </div>
-
-            <div class="control-group dropdown-wrapper">
-                <label>Buscar Mineral</label>
-                <input type="text" class="custom-input" id="mineralInput" placeholder="Ej: Diamond..."
-                    autocomplete="off">
-                <div class="dropdown-menu" id="mineralDropdown"></div>
-            </div>
-
-            <div class="control-group dropdown-wrapper">
-                <label>Rareza</label>
-                <div class="custom-input" id="rarityTrigger" style="cursor: pointer;">Todas</div>
-                <div class="dropdown-menu" id="rarityDropdown">
+                <div class="control-group">
+                    <label>Capacidad (Capacity)</label>
+                    <input type="number" class="custom-input" id="capacity" value="50" min="1" placeholder="0">
                 </div>
             </div>
 
-            <div class="control-group dropdown-wrapper">
-                <label>Filtrar Zona</label>
-                <input type="text" class="custom-input" id="zoneInput" placeholder="Todas las zonas..."
-                    autocomplete="off">
-                <div class="dropdown-menu" id="zoneDropdown"></div>
+            <div class="control-column">
+                <div class="control-group dropdown-wrapper">
+                    <label>Buscar Mineral</label>
+                    <input type="text" class="custom-input" id="mineralInput" placeholder="Ej: Diamond..."
+                        autocomplete="off">
+                    <div class="dropdown-menu" id="mineralDropdown"></div>
+                </div>
+
+                <div class="control-group dropdown-wrapper">
+                    <label>Rareza</label>
+                    <div class="custom-input" id="rarityTrigger" style="cursor: pointer;">Todas</div>
+                    <div class="dropdown-menu" id="rarityDropdown">
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-column">
+                <div class="control-group dropdown-wrapper">
+                    <label>Filtrar Zona</label>
+                    <input type="text" class="custom-input" id="zoneInput" placeholder="Todas las zonas..."
+                        autocomplete="off">
+                    <div class="dropdown-menu" id="zoneDropdown"></div>
+                </div>
             </div>
         </div>
 
@@ -105,16 +113,49 @@
                     <button class="plan-btn" data-plan="2">Plan 2</button>
                     <button class="plan-btn" data-plan="3">Plan 3</button>
                 </div>
-                <div style="text-align:center; margin-bottom:10px;">
+                <div style="text-align:center; margin-bottom:10px; display:flex; justify-content:center; gap:10px;">
+                    <button id="rename-plan-btn" class="bmc-button-small"
+                        style="display:inline-flex; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border);">
+                        <span>✏️ Rename</span>
+                    </button>
                     <button id="presets-btn" class="bmc-button-small"
                         style="display:inline-flex; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border);">
                         <span>📋 Load Preset</span>
+                    </button>
+                    <button id="clear-plan-btn" class="bmc-button-small"
+                        style="display:inline-flex; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border);">
+                        <span>🗑️ Clear</span>
                     </button>
                 </div>
                 <div class="summary-title">TOTAL BONUSES</div>
                 <div class="summary-grid" id="museum-stats-grid">
                     <!-- Stats will be injected here -->
                     <div class="stat-item empty">No bonuses active</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-equipment-controls" class="equipment-controls" style="display: none;">
+            <div class="equipment-summary">
+                <div class="plan-selector">
+                    <button class="equip-plan-btn active" data-plan="1">Loadout 1</button>
+                    <button class="equip-plan-btn" data-plan="2">Loadout 2</button>
+                    <button class="equip-plan-btn" data-plan="3">Loadout 3</button>
+                </div>
+                <div style="text-align:center; margin-bottom:10px; display:flex; justify-content:center; gap:10px;">
+                    <button id="rename-equip-btn" class="bmc-button-small"
+                        style="display:inline-flex; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border);">
+                        <span>✏️ Rename</span>
+                    </button>
+                    <button id="clear-equip-btn" class="bmc-button-small"
+                        style="display:inline-flex; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border);">
+                        <span>🗑️ Clear</span>
+                    </button>
+                </div>
+                <div class="summary-title">TOTAL BONUSES</div>
+                <div class="summary-grid" id="equipment-stats-grid">
+                    <!-- Stats will be injected here -->
+                    <div class="stat-item empty">No equipment equipped</div>
                 </div>
             </div>
         </div>
@@ -173,6 +214,24 @@
         <div id="view-museum-content" class="museum-content" style="display: none;">
             <div class="museum-grid" id="museum-grid">
                 <!-- Slots will be injected here -->
+            </div>
+        </div>
+
+        <div id="view-equipment-content" class="equipment-content" style="display: none;">
+            <div class="equipment-grid" id="equipment-grid">
+                <!-- Equipment slots will be injected here -->
+                <div class="equip-row" id="equip-row-rings">
+                    <div class="equip-row-title">Rings</div>
+                    <div class="equip-slots-container" id="slots-rings"></div>
+                </div>
+                <div class="equip-row" id="equip-row-necklace">
+                    <div class="equip-row-title">Necklace</div>
+                    <div class="equip-slots-container" id="slots-necklace"></div>
+                </div>
+                <div class="equip-row" id="equip-row-charm">
+                    <div class="equip-row-title">Charm</div>
+                    <div class="equip-slots-container" id="slots-charm"></div>
+                </div>
             </div>
         </div>
     </main>

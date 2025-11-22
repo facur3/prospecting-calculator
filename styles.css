@@ -185,6 +185,49 @@ body {
     background-color: var(--bg-panel);
 }
 
+.controls-columns {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-panel);
+    flex-wrap: nowrap;
+    align-items: flex-end;
+}
+
+.control-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+    min-width: 150px;
+}
+
+/* Make inputs single row on large screens */
+@media (min-width: 1024px) {
+    .controls-columns {
+        display: flex;
+        flex-direction: row !important;
+        align-items: flex-end;
+        flex-wrap: nowrap;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .control-column {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 1rem;
+        flex: 1;
+    }
+
+    .control-group {
+        flex: 1;
+        min-width: 0;
+        /* Prevent overflow */
+    }
+}
+
 .control-group {
     display: flex;
     flex-direction: column;
@@ -572,9 +615,17 @@ tr:hover td {
     margin: 0 0 1rem 0;
 }
 
-@media (max-width: 768px) {
+/* Mobile portrait - header stacks */
+@media (max-width: 480px) {
     .header-row {
-        padding: 0.8rem 1rem;
+        flex-direction: column;
+        gap: 10px;
+        padding: 0.8rem;
+    }
+
+    .nav-tabs {
+        width: 100%;
+        justify-content: center;
     }
 
     .brand {
@@ -582,14 +633,8 @@ tr:hover td {
     }
 
     .controls-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         padding: 1rem;
-    }
-
-    @media (max-width: 480px) {
-        .controls-grid {
-            grid-template-columns: 1fr;
-        }
     }
 
     th,
@@ -653,6 +698,29 @@ tr:hover td {
     margin-bottom: 0.8rem;
 }
 
+.summa.rings-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    width: 100%;
+}
+
+.equipment-slot {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 300px;
+    /* Allow flexible width, min 300px */
+    max-width: 100%;
+}
+
 .summary-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -691,9 +759,10 @@ tr:hover td {
 
 .museum-grid {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 1.5rem;
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -702,6 +771,9 @@ tr:hover td {
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 1rem;
+    flex: 1 1 calc(50% - 1rem);
+    /* 2 per row with gap */
+    min-width: 300px;
 }
 
 .rarity-header {
@@ -981,4 +1053,766 @@ tr:hover td {
     color: #000;
     border-color: var(--accent);
     font-weight: 600;
+}
+
+/* ========================================
+   MOBILE RESPONSIVE STYLES
+   ======================================== */
+
+/* Tablets and smaller */
+@media (max-width: 1024px) {
+    .museum-slot {
+        min-width: 120px;
+        min-height: 140px;
+    }
+
+    .slots-container {
+        gap: 8px;
+    }
+}
+
+/* Mobile landscape and portrait tablets */
+@media (max-width: 768px) {
+
+    /* Museum controls */
+    .plan-selector {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .plan-btn {
+        flex: 1;
+        min-width: 80px;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+
+    /* Museum slots */
+    .museum-slot {
+        min-width: 100px;
+        min-height: 120px;
+        font-size: 0.8rem;
+    }
+
+    .slots-container {
+        gap: 6px;
+        justify-content: center;
+    }
+
+    .rarity-header {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    .ore-name {
+        font-size: 0.85rem;
+    }
+
+    .ore-bonus {
+        font-size: 0.75rem;
+    }
+
+    /* Modal improvements */
+    .modal-content {
+        width: 90%;
+        max-width: 500px;
+        margin: 5% auto;
+    }
+
+    .selection-item {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+
+    /* Summary panel */
+    .museum-summary {
+        padding: 1rem;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+}
+
+/* Mobile portrait */
+@media (max-width: 480px) {
+
+    /* Header */
+    .header-row {
+        flex-direction: column;
+        gap: 10px;
+        padding: 0.8rem;
+    }
+
+    .nav-tabs {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .nav-tab {
+        flex: 1;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+
+    /* Museum controls */
+    .plan-selector {
+        flex-direction: row;
+        width: 100%;
+    }
+
+    .plan-btn {
+        flex: 1;
+        padding: 10px 8px;
+        font-size: 0.8rem;
+    }
+
+    /* Action buttons */
+    #rename-plan-btn,
+    #presets-btn,
+    #clear-plan-btn {
+        padding: 8px 12px !important;
+        font-size: 0.85rem !important;
+    }
+
+    #rename-plan-btn span,
+    #presets-btn span,
+    #clear-plan-btn span {
+        font-size: 0.85rem;
+    }
+
+    /* Museum grid */
+    #museum-grid {
+        gap: 12px;
+        padding: 10px;
+    }
+
+    .museum-slot {
+        min-width: calc(50% - 6px);
+        max-width: calc(50% - 6px);
+        min-height: 140px;
+        font-size: 0.75rem;
+    }
+
+    .slots-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 8px;
+    }
+
+    .rarity-header {
+        font-size: 0.85rem;
+        padding: 6px;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .rarity-title {
+        font-size: 0.9rem;
+    }
+
+    .rarity-stats {
+        font-size: 0.7rem;
+    }
+
+    .ore-name {
+        font-size: 0.8rem;
+    }
+
+    .ore-bonus {
+        font-size: 0.7rem;
+    }
+
+    .modifier-badge {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+    }
+
+    /* Modal full screen on mobile */
+    .selection-modal {
+        padding: 0;
+    }
+
+    .modal-content {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .modal-header {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .modal-body {
+        padding: 1rem;
+        max-height: calc(100vh - 80px);
+        overflow-y: auto;
+    }
+
+    .selection-item {
+        padding: 14px;
+        font-size: 0.95rem;
+        min-height: 48px;
+    }
+
+    /* Summary panel */
+    .museum-summary {
+        padding: 0.8rem;
+    }
+
+    .summary-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 6px;
+        font-size: 0.85rem;
+    }
+
+    .stat-item {
+        padding: 8px;
+    }
+
+    /* Remove button */
+    .remove-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 1.2rem;
+        top: 4px;
+        right: 4px;
+    }
+
+    /* Form inputs in modals */
+    #rename-input {
+        font-size: 16px !important;
+        padding: 12px !important;
+    }
+
+    /* Buttons in modals */
+    .cancel-btn,
+    .confirm-btn {
+        padding: 12px 20px !important;
+        font-size: 0.95rem !important;
+        min-height: 44px;
+    }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+    .museum-slot {
+        min-width: 100%;
+        max-width: 100%;
+    }
+
+    .slots-container {
+        grid-template-columns: 1fr;
+    }
+
+    .plan-selector {
+        flex-direction: column;
+    }
+
+    .plan-btn {
+        width: 100%;
+    }
+}
+
+/* Landscape orientation */
+@media (max-height: 500px) and (orientation: landscape) {
+    .modal-content {
+        margin: 2% auto;
+        max-height: 96vh;
+    }
+
+    .modal-body {
+        max-height: calc(96vh - 80px);
+    }
+}
+
+/* ========================================
+   EQUIPMENT PLANNER STYLES
+   ======================================== */
+
+/* Equipment Controls */
+.equipment-controls {
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+}
+
+.equipment-summary {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.equip-plan-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.equip-plan-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-main);
+}
+
+.equip-plan-btn.active {
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    font-weight: 600;
+}
+
+/* Equipment Content */
+.equipment-content {
+    padding: 1.5rem;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.equipment-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.slot-group {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.slot-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.slot-group-title {
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-main);
+}
+
+.slot-group-title::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+}
+
+/* Equipment Slot Card */
+.equipment-slot {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+}
+
+.equipment-slot:hover {
+    border-color: var(--text-muted);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.equipment-slot.filled {
+    border-color: var(--accent);
+    background: linear-gradient(to bottom, var(--bg-input), rgba(59, 130, 246, 0.05));
+}
+
+.equipment-slot .slot-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.equipment-slot .equipment-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+.equipment-slot .equipment-description {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.equipment-slot .equipment-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.stat-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--accent);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.stat-badge.negative {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--r-exotic);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.recipe-display {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.recipe-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.3rem;
+}
+
+.min-weight-badge {
+    display: inline-flex;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--z-nature);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+.blueprint-badge {
+    display: inline-flex;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: rgba(251, 191, 36, 0.15);
+    color: var(--r-legendary);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    font-size: 0.65rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+.cost-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(251, 191, 36, 0.15);
+    color: var(--r-legendary);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+.cost-badge.candy {
+    background: rgba(244, 114, 182, 0.15);
+    color: var(--r-mythic);
+    border-color: rgba(244, 114, 182, 0.3);
+}
+
+.equipment-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-dim);
+}
+
+.equipment-empty-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Mobile Responsive for Columns */
+@media (max-width: 768px) {
+    .controls-columns {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .control-column {
+        min-width: 100%;
+    }
+
+    .equipment-grid {
+        padding: 10px;
+    }
+
+    .slot-group {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .controls-columns {
+        padding: 1rem;
+    }
+
+    .equipment-slot {
+        padding: 1rem;
+    }
+
+    .equipment-name {
+        font-size: 1rem !important;
+    }
+}
+/* Equipment Planner Styles */
+.equip-row {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.equip-row-title {
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 1rem;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+}
+
+.equip-slots-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.equip-slot {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    width: 140px;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    text-align: center;
+}
+
+.equip-slot:hover {
+    border-color: var(--accent);
+    background: var(--bg-panel);
+}
+
+.equip-slot.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.equip-slot.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-style: dashed;
+}
+
+.equip-slot-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.equip-slot-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    line-height: 1.2;
+}
+
+.equip-slot-price {
+    font-size: 0.7rem;
+    color: var(--r-legendary);
+    margin-top: 4px;
+}
+
+.equip-slot.filled .equip-slot-name {
+    color: var(--text-main);
+}
+
+.equip-remove {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    color: var(--r-exotic);
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.equip-slot:hover .equip-remove {
+    opacity: 1;
+}
+
+/* Modal Styles for Equipment Selection */
+.selection-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 200;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.modal-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    font-weight: 800;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.close-modal:hover {
+    color: var(--text-main);
+}
+
+.modal-body {
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.selection-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.selection-item:hover {
+    background: var(--bg-input);
+}
+
+.selection-item:last-child {
+    border-bottom: none;
+}
+
+.item-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--bg-input);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.item-details {
+    flex: 1;
+}
+
+.item-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+}
+
+.item-stats {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.item-cost {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--r-legendary);
 }

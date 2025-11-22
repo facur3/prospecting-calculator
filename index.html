@@ -100,6 +100,17 @@
 
         <div id="view-museum-controls" class="museum-controls" style="display: none;">
             <div class="museum-summary">
+                <div class="plan-selector">
+                    <button class="plan-btn active" data-plan="1">Plan 1</button>
+                    <button class="plan-btn" data-plan="2">Plan 2</button>
+                    <button class="plan-btn" data-plan="3">Plan 3</button>
+                </div>
+                <div style="text-align:center; margin-bottom:10px;">
+                    <button id="presets-btn" class="bmc-button-small"
+                        style="display:inline-flex; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border);">
+                        <span>📋 Load Preset</span>
+                    </button>
+                </div>
                 <div class="summary-title">TOTAL BONUSES</div>
                 <div class="summary-grid" id="museum-stats-grid">
                     <!-- Stats will be injected here -->
@@ -166,7 +177,7 @@
         </div>
     </main>
 
-    <script src="app.js" defer></script>
+    <script src="app.js"></script>
 </body>
 
 </html>

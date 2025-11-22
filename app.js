@@ -1,8 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
-    if (typeof scrapedDatabase === 'undefined') {
-        document.getElementById('error-overlay').style.display = 'flex';
-        return;
-    }
+    // Check Database existence with retry
+    const checkDataInterval = setInterval(() => {
+        if (typeof scrapedDatabase !== 'undefined' && typeof museumData !== 'undefined') {
+            clearInterval(checkDataInterval);
+            document.getElementById('error-overlay').style.display = 'none';
+            init();
+        } else {
+            // Optional: Show loading state if needed, but error overlay is fine for now
+            // console.log("Waiting for data...");
+        }
+    }, 100);
+
+    // Timeout to show error if data never loads (e.g. 5 seconds)
+    setTimeout(() => {
+        if (typeof scrapedDatabase === 'undefined' || typeof museumData === 'undefined') {
+            document.getElementById('error-overlay').style.display = 'flex';
+            clearInterval(checkDataInterval);
+        }
+    }, 5000);
 
     // --- CONFIGURATION ---
     const rarityRank = { "common": 1, "uncommon": 2, "rare": 3, "epic": 4, "legendary": 5, "mythic": 6, "exotic": 7 };
@@ -122,6 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
         setInterval(updateTimers, 1000);
 
         renderTable();
+
+        // Auto-load museum slots on init
+        renderMuseum();
     }
 
     // --- CUSTOM DROPDOWN LOGIC ---
@@ -141,7 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = 'dropdown-item';
 
             const label = opt === 'all' ? 'Todas' : opt.charAt(0).toUpperCase() + opt.slice(1);
-            // Use specific color or white for 'all'
             const colorVar = opt === 'all' ? 'var(--text-main)' : `var(--r-${opt})`;
 
             div.innerHTML = `
@@ -151,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             div.addEventListener('click', () => {
                 state.rarityFilter = opt;
-                ui.rarityTrigger.innerHTML = div.innerHTML; // Copy visual to trigger
+                ui.rarityTrigger.innerHTML = div.innerHTML;
                 toggleDropdown(ui.rarityDrop, false);
                 renderTable();
             });
@@ -167,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
             ui.zoneDrop.innerHTML = '';
             const filtered = zones.filter(z => z.toLowerCase().includes(filterText.toLowerCase()));
 
-            // "All Zones" option
             if (filterText === '') {
                 const allDiv = document.createElement('div');
                 allDiv.className = 'dropdown-item';
@@ -205,7 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
 
-        // Input Listeners
         ui.zoneInput.addEventListener('focus', () => { toggleDropdown(ui.zoneDrop, true); renderList(ui.zoneInput.value); });
         ui.zoneInput.addEventListener('input', (e) => { toggleDropdown(ui.zoneDrop, true); renderList(e.target.value); state.zoneFilter = e.target.value.toLowerCase(); renderTable(); });
     }
@@ -214,7 +229,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function buildMineralDropdown() {
         const allMinerals = new Set();
         Object.values(scrapedDatabase).forEach(list => list.forEach(m => allMinerals.add(m)));
-        // Convert to array of objects to keep rarity info
         const uniqueMinerals = Array.from(allMinerals).reduce((acc, current) => {
             const x = acc.find(item => item.name === current.name);
             if (!x) return acc.concat([current]);
@@ -260,18 +274,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- LISTENERS ---
     function setupGlobalListeners() {
-        // Rarity Trigger
         ui.rarityTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
             const isOpen = ui.rarityDrop.classList.contains('open');
             toggleDropdown(ui.rarityDrop, !isOpen);
         });
 
-        // Stats Inputs
         ui.luck.addEventListener('input', (e) => { state.luck = parseFloat(e.target.value) || 1; renderTable(); });
         ui.capacity.addEventListener('input', (e) => { state.capacity = parseInt(e.target.value) || 1; renderTable(); });
 
-        // Sorting
         ui.headers.forEach(th => {
             th.addEventListener('click', () => {
                 const col = th.getAttribute('data-sort');
@@ -285,7 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Close Dropdowns when clicking outside
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.control-group')) {
                 toggleDropdown(ui.rarityDrop, false);
@@ -302,7 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (th.getAttribute('data-sort') === state.sortBy) {
                 th.classList.add('active-sort');
                 th.querySelector('.sort-icon').style.opacity = '1';
-                // Rotate icon if asc? (Optional, keeping simple for now)
             }
         });
     }
@@ -371,8 +380,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const fragment = document.createDocumentFragment();
         processed.forEach((item, index) => {
             const tr = document.createElement('tr');
-
-            // Location Color Logic
             const zoneColor = zoneThemes[item.location] || defaultZoneColor;
 
             let locationHTML = `<div class="color-dot" style="background-color:${zoneColor};"></div> <span class="location-text" style="color:${index === 0 ? 'var(--text-main)' : 'var(--text-muted)'}">${item.location}</span>`;
@@ -415,16 +422,36 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.tableBody.appendChild(fragment);
     }
 
-    init();
+    // init(); // Called in data check interval
 
     // --- MUSEUM PLANNER LOGIC ---
 
-    // State for Museum
-    let museumState = JSON.parse(localStorage.getItem('museumState')) || {};
-    // Structure: { "rarity_slotIndex": { ore: "OreName", modifier: "ModName", unlocked: boolean } }
+    let currentPlanId = 1;
+    // Structure: { 1: { name: "Plan 1", slots: {} }, ... }
+    let museumPlans = JSON.parse(localStorage.getItem('museumPlans')) || {
+        1: { name: "Plan 1", slots: {} },
+        2: { name: "Plan 2", slots: {} },
+        3: { name: "Plan 3", slots: {} }
+    };
+
+    // Migration Logic (Handle old structure where plans were just slots objects)
+    if (!museumPlans[1].slots && !museumPlans[1].name) {
+        // It's the old structure { 1: {}, 2: {}, 3: {} }
+        const oldPlans = { ...museumPlans };
+        museumPlans = {
+            1: { name: "Plan 1", slots: oldPlans[1] || {} },
+            2: { name: "Plan 2", slots: oldPlans[2] || {} },
+            3: { name: "Plan 3", slots: oldPlans[3] || {} }
+        };
+        localStorage.setItem('museumPlans', JSON.stringify(museumPlans));
+    }
+
+    let museumState = museumPlans[currentPlanId].slots;
 
     const museumUI = {
         tabs: document.querySelectorAll('.nav-tab'),
+        planBtns: document.querySelectorAll('.plan-btn'),
+        presetsBtn: document.getElementById('presets-btn'),
         views: {
             calculator: {
                 controls: document.getElementById('view-calculator-controls'),
@@ -439,16 +466,125 @@ document.addEventListener('DOMContentLoaded', () => {
         statsGrid: document.getElementById('museum-stats-grid')
     };
 
-    // Tab Switching
+    // Presets Logic
+    museumUI.presetsBtn.addEventListener('click', () => {
+        openPresetsModal();
+    });
+
+    function openPresetsModal() {
+        if (currentModal) currentModal.remove();
+
+        const modal = document.createElement('div');
+        modal.className = 'selection-modal';
+
+        const content = document.createElement('div');
+        content.className = 'modal-content';
+
+        const header = document.createElement('div');
+        header.className = 'modal-header';
+        header.innerHTML = `
+            <div class="modal-title">Load Preset</div>
+            <button class="close-modal">×</button>
+        `;
+
+        const body = document.createElement('div');
+        body.className = 'modal-body';
+        body.innerHTML = `<div style="color:var(--text-muted); margin-bottom:1rem; font-size:0.9rem;">Warning: Loading a preset will overwrite the current plan!</div>`;
+
+        const presets = museumData.presets || {};
+
+        Object.keys(presets).forEach(presetName => {
+            const item = document.createElement('div');
+            item.className = 'selection-item';
+            item.innerHTML = `<span>${presetName}</span>`;
+            item.addEventListener('click', () => {
+                if (confirm(`Overwrite current plan with "${presetName}"?`)) {
+                    applyPreset(presets[presetName]);
+                    modal.remove();
+                }
+            });
+            body.appendChild(item);
+        });
+
+        content.appendChild(header);
+        content.appendChild(body);
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+        currentModal = modal;
+
+        header.querySelector('.close-modal').addEventListener('click', () => modal.remove());
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
+
+    function applyPreset(presetData) {
+        // presetData is { "common_0": { ... }, ... }
+        // We need to merge this into museumState, marking slots as unlocked if they are in the preset
+
+        // Clear current slots but keep unlocked status if we want? 
+        // Actually, let's just overwrite the slots that are in the preset.
+        // And ensure they are unlocked.
+
+        Object.entries(presetData).forEach(([slotId, data]) => {
+            museumState[slotId] = {
+                ...data,
+                unlocked: true
+            };
+        });
+
+        saveMuseumState();
+        museumUI.museumGrid.innerHTML = '';
+        renderMuseum();
+    }
+
+    // Initialize UI with correct names
+    function updatePlanButtons() {
+        museumUI.planBtns.forEach(btn => {
+            const pid = btn.dataset.plan;
+            btn.textContent = museumPlans[pid].name;
+            if (parseInt(pid) === currentPlanId) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+    updatePlanButtons();
+
+    // Plan Switching & Renaming Logic
+    museumUI.planBtns.forEach(btn => {
+        // Click to switch
+        btn.addEventListener('click', () => {
+            const planId = parseInt(btn.dataset.plan);
+            if (planId === currentPlanId) return;
+
+            currentPlanId = planId;
+            museumState = museumPlans[currentPlanId].slots;
+
+            updatePlanButtons();
+
+            // Clear grid to force re-render
+            museumUI.museumGrid.innerHTML = '';
+            renderMuseum();
+        });
+
+        // Double click to rename
+        btn.addEventListener('dblclick', () => {
+            const planId = parseInt(btn.dataset.plan);
+            const newName = prompt("Enter new name for this plan:", museumPlans[planId].name);
+            if (newName && newName.trim() !== "") {
+                museumPlans[planId].name = newName.trim();
+                saveMuseumState(); // Saves everything including names
+                updatePlanButtons();
+            }
+        });
+    });
+
     museumUI.tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             const target = tab.getAttribute('data-tab');
 
-            // Update Tabs
             museumUI.tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
 
-            // Update Views
             if (target === 'calculator') {
                 museumUI.views.calculator.controls.style.display = 'grid';
                 museumUI.views.calculator.content.style.display = 'block';
@@ -459,18 +595,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 museumUI.views.calculator.content.style.display = 'none';
                 museumUI.views.museum.controls.style.display = 'block';
                 museumUI.views.museum.content.style.display = 'block';
-                renderMuseum();
+                // Force render
+                setTimeout(renderMuseum, 10);
             }
         });
     });
 
     function saveMuseumState() {
-        localStorage.setItem('museumState', JSON.stringify(museumState));
+        museumPlans[currentPlanId].slots = museumState;
+        localStorage.setItem('museumPlans', JSON.stringify(museumPlans));
         calculateMuseumStats();
     }
 
     function renderMuseum() {
-        if (museumUI.museumGrid.innerHTML !== '') return; // Already rendered
+        // Basic check to ensure data is loaded
+        if (typeof museumData === 'undefined') {
+            console.error("Museum Data not loaded!");
+            return;
+        }
+
+        if (museumUI.museumGrid.innerHTML.trim() !== '') {
+            // Already rendered, but maybe we need to update specific slots?
+            // For simplicity, let's just re-calculate stats. 
+            // If we need to re-render the DOM completely, we should clear innerHTML.
+            // But for now let's just return if built to avoid dupes.
+            // Actually, let's just ensure stats are up to date.
+            calculateMuseumStats();
+            return;
+        }
 
         const rarities = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'exotic'];
 
@@ -479,7 +631,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const row = document.createElement('div');
             row.className = 'rarity-row';
 
-            // Header
             const header = document.createElement('div');
             header.className = 'rarity-header';
             header.innerHTML = `
@@ -493,16 +644,13 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             row.appendChild(header);
 
-            // Slots Container
             const slotsContainer = document.createElement('div');
             slotsContainer.className = 'slots-container';
 
-            // Free Slots
             for (let i = 0; i < config.free; i++) {
                 slotsContainer.appendChild(createSlot(rarity, i, false));
             }
 
-            // Locked Slots
             for (let i = 0; i < config.locked; i++) {
                 slotsContainer.appendChild(createSlot(rarity, config.free + i, true));
             }
@@ -527,19 +675,16 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSlotContent(slot, slotState, isUnlocked, isLockedType);
 
         slot.addEventListener('click', (e) => {
-            if (e.target.closest('.remove-btn')) return; // Handled by remove btn
+            if (e.target.closest('.remove-btn')) return;
 
             if (!isUnlocked) {
-                // Unlock logic
                 museumState[slotId] = { ...museumState[slotId], unlocked: true };
                 saveMuseumState();
-                // Re-render slot
-                slot.className = `museum-slot ${slotState.ore ? 'filled' : ''}`; // Remove locked class
+                slot.className = `museum-slot ${slotState.ore ? 'filled' : ''}`;
                 updateSlotContent(slot, museumState[slotId], true, isLockedType);
                 return;
             }
 
-            // Open Selection Modal
             openSelectionModal(rarity, slotId);
         });
 
@@ -550,12 +695,6 @@ document.addEventListener('DOMContentLoaded', () => {
         slot.innerHTML = '';
 
         if (!isUnlocked) {
-            const config = museumData.config[slot.dataset.rarity];
-            // Determine cost (Money or Shards)
-            // Logic: Mythic locked slots cost Money+Shards?
-            // "Mythic -> only 2 displays (money + shards, no free)"
-            // Actually the config object I made has priceMoney and priceShards.
-            // I'll just show a lock icon.
             slot.innerHTML = `
                 <div class="slot-content">
                     <div class="slot-lock-icon">🔒</div>
@@ -567,17 +706,38 @@ document.addEventListener('DOMContentLoaded', () => {
             const oreData = museumData.ores[state.ore];
             const modData = state.modifier && state.modifier !== 'None' ? museumData.modifiers[state.modifier] : null;
 
+            // Calculate Efficiency
+            const userWeight = parseFloat(state.weight) || 0;
+            const targetWeight = oreData.minKG || 999;
+            let efficiency = userWeight / targetWeight;
+            if (efficiency > 1) efficiency = 1;
+
+            const effPercent = Math.floor(efficiency * 100);
+            const progressColor = efficiency >= 1 ? 'var(--z-nature)' : 'var(--z-sand)';
+
             // Format stats
             let statsHtml = '';
             for (const [stat, val] of Object.entries(oreData.stats)) {
-                statsHtml += `<div>${stat}: +${val}x</div>`;
+                const finalVal = val * efficiency;
+                statsHtml += `<div>${stat}: +${finalVal.toFixed(3)}x</div>`;
             }
 
             slot.innerHTML = `
                 <div class="remove-btn">×</div>
-                <div class="slot-content">
+                <div class="slot-content" style="justify-content:flex-start; padding-top:1rem;">
                     <div class="ore-name">${state.ore}</div>
                     <div class="ore-bonus">${statsHtml}</div>
+                    
+                    <div style="width:100%; margin-top:8px; font-size:0.7rem; color:var(--text-muted);">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+                            <span>${userWeight}kg / ${targetWeight}kg</span>
+                            <span style="color:${progressColor}">${effPercent}%</span>
+                        </div>
+                        <div style="background:#333; height:4px; width:100%; border-radius:2px; overflow:hidden;">
+                            <div style="background:${progressColor}; width:${effPercent}%; height:100%;"></div>
+                        </div>
+                    </div>
+
                     ${state.modifier && state.modifier !== 'None' ? `<div class="modifier-badge">${state.modifier}</div>` : ''}
                 </div>
             `;
@@ -586,6 +746,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.stopPropagation();
                 delete museumState[slot.dataset.id].ore;
                 delete museumState[slot.dataset.id].modifier;
+                delete museumState[slot.dataset.id].weight;
                 saveMuseumState();
                 slot.classList.remove('filled');
                 updateSlotContent(slot, museumState[slot.dataset.id], true, isLockedType);
@@ -604,7 +765,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentModal = null;
 
     function openSelectionModal(rarity, slotId) {
-        // Close existing
         if (currentModal) currentModal.remove();
 
         const modal = document.createElement('div');
@@ -623,24 +783,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const body = document.createElement('div');
         body.className = 'modal-body';
 
-        // 1. Ores List
         const ores = Object.keys(museumData.ores).filter(ore => {
-            // We need to match rarity. The museumData.ores doesn't store rarity directly in the object, 
-            // but I can infer it or I should have stored it.
-            // Wait, I didn't store rarity in museumData.ores.
-            // However, I can check `scrapedDatabase` (global) to find the rarity of the ore.
-            // Or I can just list ALL ores and let user search? 
-            // The request says "Each display accepts minerals of a specific rarity".
-            // So I MUST filter by rarity.
-            // I will use `scrapedDatabase` to find ores of this rarity.
-            // `scrapedDatabase` is { "Zone": [ {name, type, ...} ] }
             return getRarityForOre(ore).toLowerCase() === rarity;
         }).sort();
 
         if (ores.length === 0) {
             body.innerHTML = '<div style="color:var(--text-muted)">No ores found for this rarity.</div>';
         } else {
-            // Ore Selection
             const oreGroup = document.createElement('div');
             oreGroup.innerHTML = `<div class="selection-group-title">Mineral</div>`;
             body.appendChild(oreGroup);
@@ -649,14 +798,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const item = document.createElement('div');
                 item.className = 'selection-item';
                 const stats = museumData.ores[oreName].stats;
+                const minKG = museumData.ores[oreName].minKG || '?';
                 const statsStr = Object.entries(stats).map(([k, v]) => `${k} +${v}x`).join(', ');
 
                 item.innerHTML = `
-                    <span>${oreName}</span>
+                    <span>${oreName} <span style="font-size:0.7rem; color:var(--text-dim)">(${minKG}kg)</span></span>
                     <span style="font-size:0.75rem; color:var(--accent)">${statsStr}</span>
                 `;
                 item.addEventListener('click', () => {
-                    // Select Ore -> Show Modifiers
                     showModifierSelection(modal, body, slotId, oreName);
                 });
                 body.appendChild(item);
@@ -676,12 +825,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getRarityForOre(oreName) {
-        // Helper to find rarity from scrapedDatabase
         for (const zone in scrapedDatabase) {
             const found = scrapedDatabase[zone].find(m => m.name === oreName);
             if (found) return found.type;
         }
-        return 'Common'; // Fallback
+        return 'Common';
     }
 
     function showModifierSelection(modal, body, slotId, selectedOre) {
@@ -697,7 +845,7 @@ document.addEventListener('DOMContentLoaded', () => {
             item.className = 'selection-item';
             const stats = museumData.modifiers[modName].stats;
             const statsStr = Object.keys(stats).length > 0
-                ? Object.entries(stats).map(([k, v]) => `${k}`).join(', ') // Just showing stat names as values are placeholders
+                ? Object.entries(stats).map(([k, v]) => `${k}`).join(', ')
                 : 'No Bonus';
 
             item.innerHTML = `
@@ -705,23 +853,54 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span style="font-size:0.75rem; color:var(--text-muted)">${statsStr}</span>
             `;
             item.addEventListener('click', () => {
-                // Save Selection
-                museumState[slotId] = {
-                    ...museumState[slotId],
-                    ore: selectedOre,
-                    modifier: modName
-                };
-                saveMuseumState();
-
-                // Update UI
-                const slot = document.querySelector(`.museum-slot[data-id="${slotId}"]`);
-                slot.classList.add('filled');
-                updateSlotContent(slot, museumState[slotId], true, false); // Assuming unlocked if we are selecting
-
-                modal.remove();
+                showWeightInput(modal, body, slotId, selectedOre, modName);
             });
             body.appendChild(item);
         });
+    }
+
+    function showWeightInput(modal, body, slotId, selectedOre, selectedMod) {
+        body.innerHTML = '';
+        const title = modal.querySelector('.modal-title');
+        title.textContent = `Enter Weight (KG)`;
+
+        const oreInfo = museumData.ores[selectedOre];
+        const targetWeight = oreInfo.minKG || 999;
+
+        const wrapper = document.createElement('div');
+        wrapper.style.padding = "1rem";
+
+        wrapper.innerHTML = `
+            <div style="color:var(--text-muted); margin-bottom:1rem;">
+                Target Weight for Max Bonus: <strong style="color:var(--text-main)">${targetWeight} kg</strong>
+            </div>
+            <input type="number" id="weightInput" class="custom-input" placeholder="Enter weight..." step="0.1" style="margin-bottom:1rem;">
+            <button class="bmc-button-small" style="width:100%; justify-content:center; height:40px;">Save to Museum</button>
+        `;
+
+        const btn = wrapper.querySelector('button');
+        const input = wrapper.querySelector('input');
+
+        btn.addEventListener('click', () => {
+            const w = parseFloat(input.value) || 0;
+
+            museumState[slotId] = {
+                ...museumState[slotId],
+                ore: selectedOre,
+                modifier: selectedMod,
+                weight: w
+            };
+            saveMuseumState();
+
+            const slot = document.querySelector(`.museum-slot[data-id="${slotId}"]`);
+            slot.classList.add('filled');
+            updateSlotContent(slot, museumState[slotId], true, false);
+
+            modal.remove();
+        });
+
+        body.appendChild(wrapper);
+        input.focus();
     }
 
     function calculateMuseumStats() {
@@ -729,13 +908,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         Object.values(museumState).forEach(slot => {
             if (slot.ore) {
-                // Ore Stats
-                const oreStats = museumData.ores[slot.ore]?.stats || {};
-                for (const [stat, val] of Object.entries(oreStats)) {
-                    totalStats[stat] = (totalStats[stat] || 0) + val;
+                // Ore Stats with Weight Calculation
+                const oreInfo = museumData.ores[slot.ore];
+                const stats = oreInfo?.stats || {};
+                const minKG = oreInfo?.minKG || 999;
+                const userWeight = slot.weight || 0;
+
+                let efficiency = userWeight / minKG;
+                if (efficiency > 1) efficiency = 1;
+                if (efficiency < 0) efficiency = 0;
+
+                for (const [stat, val] of Object.entries(stats)) {
+                    const effectiveVal = val * efficiency;
+                    totalStats[stat] = (totalStats[stat] || 0) + effectiveVal;
                 }
 
-                // Modifier Stats
+                // Modifier Stats (Flat addition for now, as per original request)
                 if (slot.modifier && slot.modifier !== 'None') {
                     const modStats = museumData.modifiers[slot.modifier]?.stats || {};
                     for (const [stat, val] of Object.entries(modStats)) {
@@ -745,7 +933,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Render Stats
         museumUI.statsGrid.innerHTML = '';
         const statKeys = Object.keys(totalStats).sort();
 
@@ -760,10 +947,9 @@ document.addEventListener('DOMContentLoaded', () => {
             item.className = 'stat-item';
             item.innerHTML = `
                 <span class="stat-label">${stat}</span>
-                <span class="stat-value">+${val.toFixed(2)}x</span>
+                <span class="stat-value">+${val.toFixed(4)}x</span>
             `;
             museumUI.statsGrid.appendChild(item);
         });
     }
-
 });

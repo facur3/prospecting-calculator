@@ -808,7 +808,8 @@ tr:hover td {
 /* Slot Styling */
 .museum-slot {
     width: 140px;
-    height: 160px;
+    min-height: 140px;
+    height: auto;
     background: var(--bg-input);
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -1605,214 +1606,137 @@ tr:hover td {
         font-size: 1rem !important;
     }
 }
+
 /* Equipment Planner Styles */
-.equip-row {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    width: 100%;
-}
-
-.equip-row-title {
-    font-weight: 800;
-    text-transform: uppercase;
-    font-size: 1rem;
-    color: var(--text-main);
-    margin-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 0.5rem;
-}
-
-.equip-slots-container {
+.equipment-slots-container {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
 }
 
-.equip-slot {
+.equipment-slot {
     background: var(--bg-input);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 1rem;
+    padding: 0.75rem;
     width: 140px;
-    height: 140px;
+    min-height: 180px;
+    height: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     cursor: pointer;
     transition: all 0.2s;
     position: relative;
     text-align: center;
 }
 
-.equip-slot:hover {
+.equipment-slot:hover {
     border-color: var(--accent);
     background: var(--bg-panel);
+    transform: translateY(-2px);
 }
 
-.equip-slot.active {
+.equipment-slot.active {
     border-color: var(--accent);
     box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
-.equip-slot.locked {
+.equipment-slot.locked {
     opacity: 0.5;
     cursor: not-allowed;
     border-style: dashed;
 }
 
-.equip-slot-icon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-}
-
-.equip-slot-name {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    line-height: 1.2;
-}
-
-.equip-slot-price {
-    font-size: 0.7rem;
-    color: var(--r-legendary);
-    margin-top: 4px;
-}
-
-.equip-slot.filled .equip-slot-name {
-    color: var(--text-main);
-}
-
-.equip-remove {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    color: var(--r-exotic);
-    background: rgba(0,0,0,0.5);
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.equip-slot:hover .equip-remove {
+.equipment-slot .remove-btn {
     opacity: 1;
+    background-color: var(--r-exotic);
+    color: white;
+    border-color: var(--r-exotic);
+    z-index: 10;
 }
 
-/* Modal Styles for Equipment Selection */
-.selection-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 200;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-}
-
-.modal-content {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    width: 100%;
-    max-width: 600px;
-    max-height: 80vh;
+.equipment-empty {
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-}
-
-.modal-header {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-}
-
-.modal-title {
-    font-weight: 800;
-    font-size: 1.1rem;
-    text-transform: uppercase;
-}
-
-.close-modal {
-    background: none;
-    border: none;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
     color: var(--text-muted);
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
 }
 
-.close-modal:hover {
-    color: var(--text-main);
+.equipment-empty-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-dim);
 }
 
-.modal-body {
-    padding: 1rem;
-    overflow-y: auto;
-}
-
-.selection-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.8rem;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.selection-item:hover {
-    background: var(--bg-input);
-}
-
-.selection-item:last-child {
-    border-bottom: none;
-}
-
-.item-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--bg-input);
-    border-radius: 6px;
+.equipment-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    line-height: 1.2;
+    margin-bottom: 6px;
+    min-height: 2.4em;
+    /* 2 lines */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
 }
 
-.item-details {
-    flex: 1;
+.equipment-slot.filled .equipment-name {
+    color: var(--text-main);
 }
 
-.item-name {
-    font-weight: 700;
-    font-size: 0.95rem;
-    margin-bottom: 2px;
-}
-
-.item-stats {
-    font-size: 0.8rem;
+.equipment-stats {
+    font-size: 0.7rem;
     color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    margin-bottom: auto;
 }
 
-.item-cost {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem;
+.stat-badge {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 4px;
+    border-radius: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stat-badge.negative {
+    color: var(--r-exotic);
+    background: rgba(255, 0, 0, 0.1);
+}
+
+.cost-badge {
+    font-size: 0.75rem;
     color: var(--r-legendary);
+    margin-top: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.cost-badge.candy {
+    color: var(--r-mythic);
+}
+
+.premium-slot {
+    border-color: rgba(255, 170, 0, 0.3);
+    background: linear-gradient(to bottom, var(--bg-input), rgba(255, 170, 0, 0.05));
+}
+
+/* Stats Grid for Equipment */
+.equipment-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
 }

@@ -725,8 +725,8 @@ document.addEventListener('DOMContentLoaded', () => {
             tab.classList.add('active');
 
             if (target === 'calculator') {
-                museumUI.views.calculator.controls.style.display = 'block';
-                museumUI.views.calculator.content.style.display = 'block';
+                museumUI.views.calculator.controls.style.display = '';
+                museumUI.views.calculator.content.style.display = '';
                 museumUI.views.museum.controls.style.display = 'none';
                 museumUI.views.museum.content.style.display = 'none';
                 equipmentUI.views.equipment.controls.style.display = 'none';
@@ -734,8 +734,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (target === 'museum') {
                 museumUI.views.calculator.controls.style.display = 'none';
                 museumUI.views.calculator.content.style.display = 'none';
-                museumUI.views.museum.controls.style.display = 'block';
-                museumUI.views.museum.content.style.display = 'grid';
+                museumUI.views.museum.controls.style.display = '';
+                museumUI.views.museum.content.style.display = '';
                 equipmentUI.views.equipment.controls.style.display = 'none';
                 equipmentUI.views.equipment.content.style.display = 'none';
                 // Force render to ensure it appears
@@ -745,8 +745,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 museumUI.views.calculator.content.style.display = 'none';
                 museumUI.views.museum.controls.style.display = 'none';
                 museumUI.views.museum.content.style.display = 'none';
-                equipmentUI.views.equipment.controls.style.display = 'block';
-                equipmentUI.views.equipment.content.style.display = 'grid';
+                equipmentUI.views.equipment.controls.style.display = '';
+                equipmentUI.views.equipment.content.style.display = '';
                 // Render equipment planner
                 renderEquipment();
             }

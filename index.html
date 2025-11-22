@@ -1,324 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Prospecting Calculator | Pro Tool</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💎</text></svg>">
-    
+    <title>Prospecting Calculator</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💎</text></svg>">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        /* --- THEME CONFIG --- */
-        :root {
-            --bg-app: #050505;       
-            --bg-panel: #0a0a0a;     
-            --bg-input: #121212;     
-            --bg-dropdown: #18181b;
-            --border: #27272a;       
-            
-            --text-main: #f4f4f5;    
-            --text-muted: #a1a1aa;   
-            --text-dim: #52525b;     
-
-            --accent: #3b82f6;       
-            --accent-glow: rgba(59, 130, 246, 0.15);
-            
-            /* Rarities */
-            --r-common: #9ca3af;
-            --r-uncommon: #34d399;
-            --r-rare: #60a5fa;
-            --r-epic: #a78bfa;
-            --r-legendary: #fbbf24;
-            --r-mythic: #f472b6;
-            --r-exotic: #ef4444;
-
-            /* Zone Themes */
-            --z-fire: #ef4444;
-            --z-ice: #06b6d4;
-            --z-nature: #22c55e;
-            --z-void: #9333ea;
-            --z-water: #0ea5e9;
-            --z-sand: #eab308;
-            --z-cave: #64748b;
-        }
-
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            margin: 0;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-app);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            font-size: 14px;
-            overflow: hidden; 
-        }
-
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
-
-        /* --- HEADER & CONTROLS --- */
-        .top-panel {
-            background-color: var(--bg-app);
-            border-bottom: 1px solid var(--border);
-            flex-shrink: 0;
-            z-index: 50; /* Higher z-index for dropdowns */
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header-row {
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .brand {
-            font-size: 1.2rem;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .brand svg { width: 24px; height: 24px; fill: var(--accent); }
-
-        .bmc-button-small {
-            background: #FFDD00;
-            color: #000;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.8rem;
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: transform 0.2s;
-        }
-        .bmc-button-small:active { transform: scale(0.95); }
-
-        /* Responsive Controls Grid */
-        .controls-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-            padding: 1rem 1.5rem;
-            background-color: var(--bg-panel);
-        }
-
-        .control-group { display: flex; flex-direction: column; gap: 0.4rem; position: relative; }
-
-        label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* --- CUSTOM INPUTS & DROPDOWNS --- */
-        .custom-input {
-            background-color: var(--bg-input);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 0.6rem 0.8rem;
-            border-radius: 6px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            width: 100%;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: text;
-        }
-        
-        .custom-input:focus, .custom-input:focus-within {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-
-        /* Remove spinners */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
-
-        /* Dropdown Container */
-        .dropdown-wrapper { position: relative; }
-        
-        /* The Dropdown Menu (Hidden by default) */
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            max-height: 300px;
-            overflow-y: auto;
-            background-color: var(--bg-dropdown);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            margin-top: 4px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            z-index: 100;
-            display: none; /* Hidden */
-            opacity: 0;
-            transform: translateY(-5px);
-            transition: opacity 0.1s, transform 0.1s;
-        }
-
-        .dropdown-menu.open {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .dropdown-item {
-            padding: 0.6rem 0.8rem;
-            cursor: pointer;
-            font-size: 0.9rem;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.15s;
-        }
-        .dropdown-item:last-child { border-bottom: none; }
-        .dropdown-item:hover, .dropdown-item.selected { background-color: var(--bg-panel); color: var(--text-main); }
-
-        /* Item Content Styling */
-        .color-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-        .item-label { flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .item-badge { font-size: 0.65rem; padding: 2px 6px; border-radius: 3px; font-weight: 700; text-transform: uppercase; }
-
-        /* --- MAIN CONTENT (Table) --- */
-        .main-content {
-            flex-grow: 1;
-            overflow: hidden;
-            position: relative;
-            background-color: var(--bg-app);
-        }
-
-        .table-wrapper {
-            height: 100%;
-            overflow: auto; 
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px; 
-        }
-
-        th {
-            text-align: left;
-            padding: 0.8rem 1.5rem;
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            background-color: var(--bg-panel);
-            z-index: 10;
-            white-space: nowrap;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        th:hover { color: var(--text-main); background: var(--bg-hover); }
-        th.active-sort { color: var(--accent); }
-        .th-content { display: flex; align-items: center; gap: 6px; }
-        th.text-right .th-content { justify-content: flex-end; }
-        .sort-icon { width: 12px; height: 12px; opacity: 0.3; }
-        th.active-sort .sort-icon { opacity: 1; }
-
-        td {
-            padding: 0.8rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            vertical-align: middle;
-            font-size: 0.9rem;
-        }
-
-        tr:hover td { background-color: rgba(255,255,255,0.03); }
-
-        /* Row Styling */
-        .row-best { background: linear-gradient(90deg, rgba(234, 179, 8, 0.1) 0%, transparent 100%); }
-        .row-best td:first-child { box-shadow: inset 3px 0 0 var(--r-legendary); }
-        
-        .best-badge {
-            display: inline-flex; align-items: center; gap: 4px;
-            background-color: rgba(251, 191, 36, 0.2); color: var(--r-legendary);
-            font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 4px;
-            margin-right: 6px; letter-spacing: 0.05em; text-transform: uppercase;
-            border: 1px solid rgba(251, 191, 36, 0.3);
-        }
-
-        .location-text { font-weight: 500; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
-        .row-best .location-text { color: var(--text-main); font-weight: 700; }
-
-        .mineral-link { 
-            color: var(--text-main); font-weight: 600; text-decoration: none; 
-            transition: color 0.2s; display: block;
-        }
-        .mineral-link:hover { color: var(--accent); }
-
-        /* Rarity Styles */
-        .badge {
-            display: inline-flex; align-items: center; justify-content: center;
-            padding: 3px 8px; border-radius: 4px; font-size: 0.65rem;
-            font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
-            min-width: 80px; background: rgba(255,255,255,0.05);
-        }
-        
-        .type-common { color: var(--r-common); border: 1px solid rgba(156, 163, 175, 0.3); }
-        .type-uncommon { color: var(--r-uncommon); border: 1px solid rgba(52, 211, 153, 0.3); }
-        .type-rare { color: var(--r-rare); border: 1px solid rgba(96, 165, 250, 0.3); }
-        .type-epic { color: var(--r-epic); border: 1px solid rgba(167, 139, 250, 0.3); }
-        .type-legendary { color: var(--r-legendary); border: 1px solid rgba(251, 191, 36, 0.3); }
-        .type-mythic { color: var(--r-mythic); border: 1px solid rgba(244, 114, 182, 0.3); }
-        .type-exotic { color: var(--r-exotic); border: 1px solid rgba(239, 68, 68, 0.5); box-shadow: 0 0 10px rgba(239, 68, 68, 0.15); }
-
-        /* Text Utils */
-        .mono-text { font-family: 'JetBrains Mono', monospace; color: var(--text-muted); font-size: 0.85rem; }
-        
-        .prob-cell { display: flex; flex-direction: column; align-items: flex-end; }
-        .batches-val { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 1.1rem; color: var(--text-main); }
-        .batches-sub { font-size: 0.65rem; text-transform: uppercase; font-weight: 600; color: var(--text-muted); margin-top: 2px;}
-        .percent-val { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
-
-        .effort-easy { color: var(--r-uncommon); }
-        .effort-mid { color: var(--accent); }
-        .effort-hard { color: var(--r-legendary); }
-        .effort-insane { color: var(--r-exotic); }
-
-        #no-results { display: none; text-align: center; padding: 3rem; color: var(--text-dim); }
-
-        #error-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-app); display: none; justify-content: center; align-items: center; z-index: 100; }
-        .error-box { text-align: center; padding: 2rem; border: 1px solid var(--r-exotic); border-radius: 8px; background: var(--bg-panel); }
-        .error-box h2 { color: var(--r-exotic); margin: 0 0 1rem 0; }
-
-        @media (max-width: 768px) {
-            .header-row { padding: 0.8rem 1rem; }
-            .brand { font-size: 1rem; }
-            .controls-grid { grid-template-columns: 1fr 1fr; padding: 1rem; }
-            @media (max-width: 480px) { .controls-grid { grid-template-columns: 1fr; } }
-            th, td { padding: 0.8rem 1rem; }
-        }
-    </style>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
     <div id="error-overlay">
@@ -329,19 +26,46 @@
     </div>
 
     <script src="database.js" onerror="document.getElementById('error-overlay').style.display='flex'"></script>
+    <script src="museum_data.js"></script>
 
     <header class="top-panel">
         <div class="header-row">
             <div class="brand">
-                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/></svg>
-                PROSPECTOR <span style="color: var(--text-dim); font-weight: 400;">CALC</span>
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z" />
+                </svg>
+                PROSPECTING CALCULATOR
             </div>
-            <a href="https://buymeacoffee.com/facur33" target="_blank" class="bmc-button-small">
-                <span>☕ Support</span>
-            </a>
+
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="calculator">Calculator</button>
+                <button class="nav-tab" data-tab="museum">Museum Planner</button>
+            </div>
+
+            <div class="header-actions">
+                <a href="https://prospecting.miraheze.org/wiki/Main_Page" target="_blank"
+                    class="bmc-button-small wiki-btn">
+                    <span>📚 Wiki</span>
+                </a>
+                <a href="https://buymeacoffee.com/facur33" target="_blank" class="bmc-button-small">
+                    <span>☕ Support</span>
+                </a>
+            </div>
         </div>
 
-        <div class="controls-grid">
+        <div class="timers-row">
+            <div class="timer-card">
+                <div class="timer-label">Traveling Merchant</div>
+                <div class="timer-val" id="timer-merchant">--:--:--</div>
+            </div>
+            <div class="timer-card">
+                <div class="timer-label">Infernal Heart</div>
+                <div class="timer-val" id="timer-infernal">--:--:--</div>
+            </div>
+        </div>
+
+        <div id="view-calculator-controls" class="controls-grid">
             <div class="control-group">
                 <label>Suerte (Luck)</label>
                 <input type="number" class="custom-input" id="luck" value="1" min="0.1" step="0.1" placeholder="0">
@@ -354,7 +78,8 @@
 
             <div class="control-group dropdown-wrapper">
                 <label>Buscar Mineral</label>
-                <input type="text" class="custom-input" id="mineralInput" placeholder="Ej: Diamond..." autocomplete="off">
+                <input type="text" class="custom-input" id="mineralInput" placeholder="Ej: Diamond..."
+                    autocomplete="off">
                 <div class="dropdown-menu" id="mineralDropdown"></div>
             </div>
 
@@ -362,39 +87,68 @@
                 <label>Rareza</label>
                 <div class="custom-input" id="rarityTrigger" style="cursor: pointer;">Todas</div>
                 <div class="dropdown-menu" id="rarityDropdown">
-                    </div>
+                </div>
             </div>
 
             <div class="control-group dropdown-wrapper">
                 <label>Filtrar Zona</label>
-                <input type="text" class="custom-input" id="zoneInput" placeholder="Todas las zonas..." autocomplete="off">
+                <input type="text" class="custom-input" id="zoneInput" placeholder="Todas las zonas..."
+                    autocomplete="off">
                 <div class="dropdown-menu" id="zoneDropdown"></div>
+            </div>
+        </div>
+
+        <div id="view-museum-controls" class="museum-controls" style="display: none;">
+            <div class="museum-summary">
+                <div class="summary-title">TOTAL BONUSES</div>
+                <div class="summary-grid" id="museum-stats-grid">
+                    <!-- Stats will be injected here -->
+                    <div class="stat-item empty">No bonuses active</div>
+                </div>
             </div>
         </div>
     </header>
 
     <main class="main-content">
-        <div class="table-wrapper">
+        <div id="view-calculator-content" class="table-wrapper">
             <table id="resultsTable">
                 <thead>
                     <tr>
                         <th data-sort="location" style="width: 20%">
-                            <div class="th-content">Ubicación <svg class="sort-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z"/></svg></div>
+                            <div class="th-content">Ubicación <svg class="sort-icon" viewBox="0 0 24 24"
+                                    fill="currentColor">
+                                    <path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z" />
+                                </svg></div>
                         </th>
                         <th data-sort="name" style="width: 20%">
-                            <div class="th-content">Mineral <svg class="sort-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z"/></svg></div>
+                            <div class="th-content">Mineral <svg class="sort-icon" viewBox="0 0 24 24"
+                                    fill="currentColor">
+                                    <path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z" />
+                                </svg></div>
                         </th>
                         <th data-sort="rarity" style="width: 15%">
-                            <div class="th-content">Rareza <svg class="sort-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z"/></svg></div>
+                            <div class="th-content">Rareza <svg class="sort-icon" viewBox="0 0 24 24"
+                                    fill="currentColor">
+                                    <path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z" />
+                                </svg></div>
                         </th>
                         <th data-sort="value" class="text-right" style="width: 15%;">
-                            <div class="th-content">Valor <svg class="sort-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z"/></svg></div>
+                            <div class="th-content">Valor <svg class="sort-icon" viewBox="0 0 24 24"
+                                    fill="currentColor">
+                                    <path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z" />
+                                </svg></div>
                         </th>
                         <th data-sort="oneIn" class="text-right" style="width: 15%;">
-                            <div class="th-content">Base (1/X) <svg class="sort-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z"/></svg></div>
+                            <div class="th-content">Base (1/X) <svg class="sort-icon" viewBox="0 0 24 24"
+                                    fill="currentColor">
+                                    <path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z" />
+                                </svg></div>
                         </th>
                         <th data-sort="effort" class="text-right" style="width: 15%;">
-                            <div class="th-content">Estimado <svg class="sort-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z"/></svg></div>
+                            <div class="th-content">Estimado <svg class="sort-icon" viewBox="0 0 24 24"
+                                    fill="currentColor">
+                                    <path d="M7 10l5-5 5 5H7zM7 14l5 5 5-5H7z" />
+                                </svg></div>
                         </th>
                     </tr>
                 </thead>
@@ -404,364 +158,15 @@
                 No se encontraron resultados. Intenta otra búsqueda.
             </div>
         </div>
+
+        <div id="view-museum-content" class="museum-content" style="display: none;">
+            <div class="museum-grid" id="museum-grid">
+                <!-- Slots will be injected here -->
+            </div>
+        </div>
     </main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof scrapedDatabase === 'undefined') {
-                document.getElementById('error-overlay').style.display = 'flex';
-                return;
-            }
-
-            // --- CONFIGURATION ---
-            const rarityRank = { "common": 1, "uncommon": 2, "rare": 3, "epic": 4, "legendary": 5, "mythic": 6, "exotic": 7 };
-            const rarityEfficiency = { "exotic": 0.65, "mythic": 0.75, "legendary": 0.80, "epic": 0.65, "rare": 0.65, "uncommon": 0.65, "common": 0.70 };
-            
-            // Zone Colors Configuration
-            const zoneThemes = {
-                "Infernal Heart": "var(--z-fire)", "The Magma Furnace": "var(--z-fire)", 
-                "Volcanic Sands": "var(--z-sand)", "Sunset Beach": "var(--z-sand)", "Windswept Beach": "var(--z-sand)", "Beach": "var(--z-sand)",
-                "Frozen Peak": "var(--z-ice)", "Frostbite River": "var(--z-ice)", "Frostbite Waterfall": "var(--z-ice)",
-                "Rotwood Swamp": "var(--z-nature)", "Fungal Marsh": "var(--z-nature)", "Overgrown Grotto": "var(--z-nature)", "Deeproot Spring": "var(--z-nature)",
-                "The Void": "var(--z-void)", "Abyssal Depths": "var(--z-void)", "The void (if in loot pool)": "var(--z-void)",
-                "Azuralite Oasis": "var(--z-water)", "Fortune River": "var(--z-water)", "Fortune River Delta": "var(--z-water)",
-                "Crystal Cavern River": "var(--z-cave)", "Rubble Creek Deposits": "var(--z-cave)", "Rubble Creek Sands": "var(--z-cave)"
-            };
-            const defaultZoneColor = "var(--text-muted)";
-
-            // --- STATE ---
-            const state = {
-                zoneFilter: '',
-                mineralFilter: '',
-                rarityFilter: 'all',
-                luck: 1,
-                capacity: 50,
-                sortBy: 'effort',
-                sortDesc: true
-            };
-
-            // --- UI ELEMENTS ---
-            const ui = {
-                luck: document.getElementById('luck'),
-                capacity: document.getElementById('capacity'),
-                tableBody: document.querySelector('#resultsTable tbody'),
-                headers: document.querySelectorAll('th[data-sort]'),
-                noResults: document.getElementById('no-results'),
-                
-                // Custom Dropdown Elements
-                minInput: document.getElementById('mineralInput'),
-                minDrop: document.getElementById('mineralDropdown'),
-                
-                zoneInput: document.getElementById('zoneInput'),
-                zoneDrop: document.getElementById('zoneDropdown'),
-                
-                rarityTrigger: document.getElementById('rarityTrigger'),
-                rarityDrop: document.getElementById('rarityDropdown')
-            };
-
-            // --- INITIALIZATION ---
-            function init() {
-                buildRarityDropdown();
-                buildZoneDropdown();
-                buildMineralDropdown();
-                
-                setupGlobalListeners();
-                renderTable();
-            }
-
-            // --- CUSTOM DROPDOWN LOGIC ---
-
-            function toggleDropdown(menu, show) {
-                if (show) menu.classList.add('open');
-                else menu.classList.remove('open');
-            }
-
-            // 1. RARITY DROPDOWN BUILDER
-            function buildRarityDropdown() {
-                const options = ['all', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'exotic'];
-                ui.rarityDrop.innerHTML = '';
-                
-                options.forEach(opt => {
-                    const div = document.createElement('div');
-                    div.className = 'dropdown-item';
-                    
-                    const label = opt === 'all' ? 'Todas' : opt.charAt(0).toUpperCase() + opt.slice(1);
-                    // Use specific color or white for 'all'
-                    const colorVar = opt === 'all' ? 'var(--text-main)' : `var(--r-${opt})`;
-                    
-                    div.innerHTML = `
-                        <div class="color-dot" style="background-color: ${colorVar};"></div>
-                        <div class="item-label" style="color: ${colorVar}; font-weight: 600;">${label}</div>
-                    `;
-                    
-                    div.addEventListener('click', () => {
-                        state.rarityFilter = opt;
-                        ui.rarityTrigger.innerHTML = div.innerHTML; // Copy visual to trigger
-                        toggleDropdown(ui.rarityDrop, false);
-                        renderTable();
-                    });
-                    ui.rarityDrop.appendChild(div);
-                });
-            }
-
-            // 2. ZONE DROPDOWN BUILDER
-            function buildZoneDropdown() {
-                const zones = Object.keys(scrapedDatabase).sort();
-                
-                const renderList = (filterText = '') => {
-                    ui.zoneDrop.innerHTML = '';
-                    const filtered = zones.filter(z => z.toLowerCase().includes(filterText.toLowerCase()));
-                    
-                    // "All Zones" option
-                    if (filterText === '') {
-                        const allDiv = document.createElement('div');
-                        allDiv.className = 'dropdown-item';
-                        allDiv.innerHTML = `<div class="item-label">Todas las zonas...</div>`;
-                        allDiv.addEventListener('click', () => {
-                            state.zoneFilter = '';
-                            ui.zoneInput.value = '';
-                            toggleDropdown(ui.zoneDrop, false);
-                            renderTable();
-                        });
-                        ui.zoneDrop.appendChild(allDiv);
-                    }
-
-                    if (filtered.length === 0) {
-                        ui.zoneDrop.innerHTML += `<div class="dropdown-item" style="color:var(--text-dim)">Sin resultados</div>`;
-                        return;
-                    }
-
-                    filtered.forEach(zone => {
-                        const div = document.createElement('div');
-                        div.className = 'dropdown-item';
-                        const color = zoneThemes[zone] || defaultZoneColor;
-                        
-                        div.innerHTML = `
-                            <div class="color-dot" style="background-color: ${color}; box-shadow: 0 0 5px ${color}40;"></div>
-                            <div class="item-label">${zone}</div>
-                        `;
-                        div.addEventListener('click', () => {
-                            state.zoneFilter = zone.toLowerCase();
-                            ui.zoneInput.value = zone;
-                            toggleDropdown(ui.zoneDrop, false);
-                            renderTable();
-                        });
-                        ui.zoneDrop.appendChild(div);
-                    });
-                };
-
-                // Input Listeners
-                ui.zoneInput.addEventListener('focus', () => { toggleDropdown(ui.zoneDrop, true); renderList(ui.zoneInput.value); });
-                ui.zoneInput.addEventListener('input', (e) => { toggleDropdown(ui.zoneDrop, true); renderList(e.target.value); state.zoneFilter = e.target.value.toLowerCase(); renderTable(); });
-            }
-
-            // 3. MINERAL DROPDOWN BUILDER
-            function buildMineralDropdown() {
-                const allMinerals = new Set();
-                Object.values(scrapedDatabase).forEach(list => list.forEach(m => allMinerals.add(m)));
-                // Convert to array of objects to keep rarity info
-                const uniqueMinerals = Array.from(allMinerals).reduce((acc, current) => {
-                    const x = acc.find(item => item.name === current.name);
-                    if (!x) return acc.concat([current]);
-                    else return acc;
-                }, []).sort((a, b) => a.name.localeCompare(b.name));
-
-                const renderList = (filterText = '') => {
-                    ui.minDrop.innerHTML = '';
-                    const filtered = uniqueMinerals.filter(m => m.name.toLowerCase().includes(filterText.toLowerCase()));
-
-                    if (filtered.length === 0) {
-                        ui.minDrop.innerHTML = `<div class="dropdown-item" style="color:var(--text-dim)">Sin resultados</div>`;
-                        return;
-                    }
-
-                    filtered.forEach(min => {
-                        const div = document.createElement('div');
-                        div.className = 'dropdown-item';
-                        const rClass = `type-${min.type.toLowerCase()}`;
-                        
-                        div.innerHTML = `
-                            <div class="item-label">${min.name}</div>
-                            <div class="item-badge ${rClass}">${min.type}</div>
-                        `;
-                        div.addEventListener('click', () => {
-                            state.mineralFilter = min.name.toLowerCase();
-                            ui.minInput.value = min.name;
-                            toggleDropdown(ui.minDrop, false);
-                            renderTable();
-                        });
-                        ui.minDrop.appendChild(div);
-                    });
-                };
-
-                ui.minInput.addEventListener('focus', () => { toggleDropdown(ui.minDrop, true); renderList(ui.minInput.value); });
-                ui.minInput.addEventListener('input', (e) => { 
-                    toggleDropdown(ui.minDrop, true); 
-                    renderList(e.target.value); 
-                    state.mineralFilter = e.target.value.toLowerCase(); 
-                    renderTable(); 
-                });
-            }
-
-            // --- LISTENERS ---
-            function setupGlobalListeners() {
-                // Rarity Trigger
-                ui.rarityTrigger.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const isOpen = ui.rarityDrop.classList.contains('open');
-                    toggleDropdown(ui.rarityDrop, !isOpen);
-                });
-
-                // Stats Inputs
-                ui.luck.addEventListener('input', (e) => { state.luck = parseFloat(e.target.value) || 1; renderTable(); });
-                ui.capacity.addEventListener('input', (e) => { state.capacity = parseInt(e.target.value) || 1; renderTable(); });
-
-                // Sorting
-                ui.headers.forEach(th => {
-                    th.addEventListener('click', () => {
-                        const col = th.getAttribute('data-sort');
-                        if (state.sortBy === col) state.sortDesc = !state.sortDesc;
-                        else {
-                            state.sortBy = col;
-                            state.sortDesc = !(col === 'name' || col === 'location');
-                        }
-                        updateHeaderVisuals();
-                        renderTable();
-                    });
-                });
-
-                // Close Dropdowns when clicking outside
-                document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.control-group')) {
-                        toggleDropdown(ui.rarityDrop, false);
-                        toggleDropdown(ui.zoneDrop, false);
-                        toggleDropdown(ui.minDrop, false);
-                    }
-                });
-            }
-
-            function updateHeaderVisuals() {
-                ui.headers.forEach(th => {
-                    th.classList.remove('active-sort');
-                    th.querySelector('.sort-icon').style.opacity = '0.3';
-                    if (th.getAttribute('data-sort') === state.sortBy) {
-                        th.classList.add('active-sort');
-                        th.querySelector('.sort-icon').style.opacity = '1';
-                        // Rotate icon if asc? (Optional, keeping simple for now)
-                    }
-                });
-            }
-
-            // --- CALCULATION & RENDER ---
-            function calculateChance(item) {
-                const pBase = 1 / item.oneIn; 
-                const pFailOnce = 1 - pBase;
-                const typeKey = item.type.toLowerCase();
-                const efficiency = rarityEfficiency[typeKey] || 1.0;
-                
-                const effectiveLuck = state.luck * efficiency;
-                const pFoundInSlot = 1 - Math.pow(pFailOnce, effectiveLuck);
-                const actualItemsPerPan = Math.sqrt(state.capacity);
-                const pFailBatch = Math.pow(1 - pFoundInSlot, actualItemsPerPan);
-                
-                return 1 - pFailBatch;
-            }
-
-            function formatMoney(val) {
-                return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
-            }
-
-            function renderTable() {
-                ui.tableBody.innerHTML = '';
-                let rawData = [];
-                Object.entries(scrapedDatabase).forEach(([zoneName, minerals]) => {
-                    const mineralsWithLoc = minerals.map(m => ({ ...m, location: zoneName }));
-                    rawData = rawData.concat(mineralsWithLoc);
-                });
-
-                let filtered = rawData.filter(item => {
-                    const matchZone = state.zoneFilter === '' || item.location.toLowerCase().includes(state.zoneFilter);
-                    const matchMineral = state.mineralFilter === '' || item.name.toLowerCase().includes(state.mineralFilter);
-                    const matchRarity = state.rarityFilter === 'all' || item.type.toLowerCase() === state.rarityFilter;
-                    return matchZone && matchMineral && matchRarity;
-                });
-
-                if (filtered.length === 0) {
-                    ui.noResults.style.display = 'block';
-                    return;
-                }
-                ui.noResults.style.display = 'none';
-
-                const processed = filtered.map(item => ({
-                    ...item,
-                    calcChance: calculateChance(item) 
-                }));
-
-                processed.sort((a, b) => {
-                    let valA, valB;
-                    switch(state.sortBy) {
-                        case 'rarity': valA = rarityRank[a.type.toLowerCase()] || 0; valB = rarityRank[b.type.toLowerCase()] || 0; break;
-                        case 'value': valA = a.value; valB = b.value; break;
-                        case 'oneIn': valA = a.oneIn; valB = b.oneIn; break;
-                        case 'effort': valA = a.calcChance; valB = b.calcChance; break;
-                        case 'name': valA = a.name.toLowerCase(); valB = b.name.toLowerCase(); break;
-                        case 'location': valA = a.location.toLowerCase(); valB = b.location.toLowerCase(); break;
-                        default: valA = 0; valB = 0;
-                    }
-                    if (valA < valB) return state.sortDesc ? 1 : -1;
-                    if (valA > valB) return state.sortDesc ? -1 : 1;
-                    return 0;
-                });
-
-                const fragment = document.createDocumentFragment();
-                processed.forEach((item, index) => {
-                    const tr = document.createElement('tr');
-                    
-                    // Location Color Logic
-                    const zoneColor = zoneThemes[item.location] || defaultZoneColor;
-                    
-                    let locationHTML = `<div class="color-dot" style="background-color:${zoneColor};"></div> <span class="location-text" style="color:${index===0 ? 'var(--text-main)' : 'var(--text-muted)'}">${item.location}</span>`;
-                    
-                    if (index === 0) {
-                        tr.classList.add('row-best');
-                        locationHTML = `<span class="best-badge">🏆 TOP</span> ${locationHTML}`;
-                    }
-
-                    const chance = item.calcChance;
-                    let batchesStr = "", percentStr = "", effortClass = "effort-mid";
-                    const avgBatches = 1 / chance;
-
-                    if (chance >= 0.99) {
-                        batchesStr = "1"; percentStr = "Garantizado"; effortClass = "effort-easy";
-                    } else {
-                        if (avgBatches > 10000) effortClass = "effort-insane";
-                        else if (avgBatches > 1000) effortClass = "effort-hard";
-                        else if (avgBatches < 50) effortClass = "effort-easy";
-                        batchesStr = Math.ceil(avgBatches).toLocaleString();
-                        percentStr = (chance * 100).toFixed(4) + "%";
-                    }
-
-                    tr.innerHTML = `
-                        <td><div class="location-text">${locationHTML}</div></td>
-                        <td><a href="${item.wikiUrl}" target="_blank" class="mineral-link">${item.name}</a></td>
-                        <td><span class="badge type-${item.type.toLowerCase()}">${item.type}</span></td>
-                        <td style="text-align: right;"><span class="mono-text">${formatMoney(item.value)}</span></td>
-                        <td style="text-align: right;"><span class="mono-text">1 / ${item.oneIn.toLocaleString()}</span></td>
-                        <td style="text-align: right;">
-                            <div class="prob-cell">
-                                <span class="batches-val ${effortClass}">${batchesStr}</span>
-                                <span class="batches-sub">Bateas</span>
-                                <span class="percent-val">${percentStr}</span>
-                            </div>
-                        </td>
-                    `;
-                    fragment.appendChild(tr);
-                });
-                ui.tableBody.appendChild(fragment);
-            }
-
-            init();
-        });
-    </script>
+    <script src="app.js" defer></script>
 </body>
+
 </html>

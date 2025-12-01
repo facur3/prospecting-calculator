@@ -52,25 +52,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const minutes = now.getMinutes();
         const seconds = now.getSeconds();
 
-        // --- Merchant (Arrives XX:45, Lasts 15m -> Ends XX:00) ---
+        // --- Merchant (Arrives Daily at 01:00 Berlin Time) ---
         const merchantEl = document.getElementById('timer-merchant');
         const merchantLabel = merchantEl.parentElement.querySelector('.timer-label');
 
-        if (minutes >= 45) {
-            // Active (45-59)
-            merchantLabel.textContent = "Merchant (Active!)";
-            merchantEl.classList.add('active-text');
-            let diff = 60 - minutes;
-            let secs = (diff * 60) - seconds;
-            merchantEl.textContent = formatTime(secs);
-        } else {
-            // Inactive (00-44)
-            merchantLabel.textContent = "Merchant Arrives in";
-            merchantEl.classList.remove('active-text');
-            let diff = 45 - minutes;
-            let secs = (diff * 60) - seconds;
-            merchantEl.textContent = formatTime(secs);
+        const nowTime = new Date();
+        const berlinString = nowTime.toLocaleString('en-US', { timeZone: 'Europe/Berlin', hour12: false });
+        const berlinNow = new Date(berlinString);
+
+        const target = new Date(berlinNow);
+        target.setHours(1, 0, 0, 0);
+
+        if (berlinNow >= target) {
+            target.setDate(target.getDate() + 1);
         }
+
+        const diffMs = target - berlinNow;
+        const hours = Math.floor(diffMs / (1000 * 60 * 60));
+        const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+        merchantLabel.textContent = "Merchant Stock Refreshes in";
+        merchantEl.textContent = `${hours}h ${mins}m ${secs}s`;
+        merchantEl.classList.add('active-text');
 
         // --- Infernal Heart (Opens XX:15, Lasts 30m -> Ends XX:45) ---
         const infernalEl = document.getElementById('timer-infernal');
@@ -325,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const effectiveLuck = state.luck * efficiency;
         const pFoundInSlot = 1 - Math.pow(pFailOnce, effectiveLuck);
-        const actualItemsPerPan = Math.sqrt(state.capacity);
+        const actualItemsPerPan = state.capacity;
         const pFailBatch = Math.pow(1 - pFoundInSlot, actualItemsPerPan);
 
         return 1 - pFailBatch;
@@ -822,10 +826,13 @@ document.addEventListener('DOMContentLoaded', () => {
         slot.addEventListener('click', (e) => {
             if (e.target.closest('.remove-btn')) return;
 
-            if (!isUnlocked) {
+            const currentSlotState = museumState[slotId] || {};
+            const currentlyUnlocked = !isLockedType || currentSlotState.unlocked;
+
+            if (!currentlyUnlocked) {
                 museumState[slotId] = { ...museumState[slotId], unlocked: true };
                 saveMuseumState();
-                slot.className = `museum-slot ${slotState.ore ? 'filled' : ''}`;
+                slot.className = `museum-slot ${currentSlotState.ore ? 'filled' : ''}`;
                 updateSlotContent(slot, museumState[slotId], true, isLockedType);
                 return;
             }

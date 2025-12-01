@@ -1,12 +1,12 @@
 const museumData = {
     config: {
-        common: { free: 3, locked: 0, priceMoney: 1000000, priceShards: 400 },
-        uncommon: { free: 3, locked: 0, priceMoney: 5000000, priceShards: 800 },
-        rare: { free: 3, locked: 0, priceMoney: 10000000, priceShards: 1500 },
-        epic: { free: 3, locked: 0, priceMoney: 100000000, priceShards: 2250 },
-        legendary: { free: 3, locked: 0, priceMoney: 1000000000, priceShards: 3000 },
-        mythic: { free: 2, locked: 0, priceMoney: 10000000000, priceShards: 5000 },
-        exotic: { free: 1, locked: 0, priceMoney: null, priceShards: 10000 }
+        common: { free: 1, locked: 2, priceMoney: 1000000, priceShards: 400 },
+        uncommon: { free: 1, locked: 2, priceMoney: 5000000, priceShards: 800 },
+        rare: { free: 1, locked: 2, priceMoney: 10000000, priceShards: 1500 },
+        epic: { free: 1, locked: 2, priceMoney: 100000000, priceShards: 2250 },
+        legendary: { free: 1, locked: 2, priceMoney: 1000000000, priceShards: 3000 },
+        mythic: { free: 0, locked: 2, priceMoney: 10000000000, priceShards: 5000 },
+        exotic: { free: 0, locked: 1, priceMoney: null, priceShards: 10000 }
     },
     ores: {
         // Common

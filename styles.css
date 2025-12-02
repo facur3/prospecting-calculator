@@ -698,7 +698,7 @@ tr:hover td {
     margin-bottom: 0.8rem;
 }
 
-.summa.rings-container {
+.summary .rings-container {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
@@ -716,8 +716,8 @@ tr:hover td {
     min-height: 120px;
     display: flex;
     flex-direction: column;
-    flex: 1 1 300px;
-    /* Allow flexible width, min 300px */
+    flex: 1 1 140px;
+    /* Allow flexible width, min 140px for mobile */
     max-width: 100%;
 }
 

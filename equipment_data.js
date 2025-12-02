@@ -742,7 +742,7 @@ const equipmentData = {
                 { material: 'Gloomcap', amount: 10 }
             ],
             stats: {
-                'Luck': { min: 50, max: 250, s6max: 275 },
+                'Luck': { min: 150, max: 350, s6max: 375 },
                 'Dig Speed': { min: 0, max: 20, s6max: 22, percent: true },
                 'Shake Speed': { min: 0, max: 20, s6max: 22, percent: true },
                 'Size Boost': { min: 5, max: 20, s6max: 21, percent: true },

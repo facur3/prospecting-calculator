@@ -329,7 +329,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const effectiveLuck = state.luck * efficiency;
         const pFoundInSlot = 1 - Math.pow(pFailOnce, effectiveLuck);
-        const actualItemsPerPan = state.capacity;
+
+        // Wiki: "square root of capacity = average minerals"
+        const actualItemsPerPan = Math.sqrt(state.capacity);
+
         const pFailBatch = Math.pow(1 - pFoundInSlot, actualItemsPerPan);
 
         return 1 - pFailBatch;

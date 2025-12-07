@@ -411,12 +411,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             tr.innerHTML = `
-                <td><div class="location-text">${locationHTML}</div></td>
-                <td><a href="${item.wikiUrl}" target="_blank" class="mineral-link">${item.name}</a></td>
-                <td><span class="badge type-${item.type.toLowerCase()}">${item.type}</span></td>
-                <td style="text-align: right;"><span class="mono-text">${formatMoney(item.value)}</span></td>
-                <td style="text-align: right;"><span class="mono-text">1 / ${item.oneIn.toLocaleString()}</span></td>
-                <td style="text-align: right;">
+                <td data-label="Ubicación"><div class="location-text">${locationHTML}</div></td>
+                <td data-label="Mineral"><a href="${item.wikiUrl}" target="_blank" class="mineral-link">${item.name}</a></td>
+                <td data-label="Rareza"><span class="badge type-${item.type.toLowerCase()}">${item.type}</span></td>
+                <td data-label="Valor" style="text-align: right;"><span class="mono-text">${formatMoney(item.value)}</span></td>
+                <td data-label="Base (1/X)" style="text-align: right;"><span class="mono-text">1 / ${item.oneIn.toLocaleString()}</span></td>
+                <td data-label="Estimado" style="text-align: right;">
                     <div class="prob-cell">
                         <span class="batches-val ${effortClass}">${batchesStr}</span>
                         <span class="batches-sub">Bateas</span>

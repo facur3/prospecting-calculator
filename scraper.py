@@ -90,7 +90,7 @@ try:
             # \s*[-–—]\s* -> Guion (cualquier tipo)
             # .*?\(~?1\s*in\s*([\d,]+)\) -> Busca el (1 in X)
             
-            matches = re.finditer(r"([^\n\r]+?)\s*[-–—]\s*.*?\(~?1\s*in\s*([\d,]+)\)", full_text)
+            matches = re.finditer(r"([^\n\r]+?)\s*[-–—:]\s*.*?\(~?1\s*in\s*([\d,]+)\)", full_text)
             
             found_any = False
             for match in matches:
@@ -131,8 +131,8 @@ try:
                         cols = tr.find_all('td')
                         if len(cols) >= 2:
                             for col in cols:
-                                if "1 in" in col.text:
-                                    m_one = re.search(r'1 in ([\d,]+)', col.text)
+                                if "1 in" in col.text or "1/" in col.text:
+                                    m_one = re.search(r'1\s*(?:in|/)\s*([\d,]+)', col.text)
                                     if m_one:
                                         z_name = clean_zone_name(cols[0].text)
                                         o_in = clean_number(m_one.group(1))

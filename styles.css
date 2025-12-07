@@ -1740,3 +1740,156 @@ tr:hover td {
     gap: 1rem;
     margin-top: 1rem;
 }
+/* --- MOBILE REDESIGN 2.0 --- */
+@media (max-width: 768px) {
+    /* Layout & Header */
+    body {
+        height: 100%; /* Allow body to scroll if needed, but we keep flex layout */
+        position: fixed; /* Prevent bouncy scroll on iOS if needed */
+        width: 100%;
+    }
+
+    .top-panel {
+        position: relative;
+        z-index: 100;
+        max-height: 40vh; /* Limit header height */
+        overflow-y: auto; /* Allow scrolling within header if it gets too tall */
+    }
+
+    .header-row {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .brand {
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .header-actions {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .nav-tabs {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .nav-tab {
+        flex: 1;
+        text-align: center;
+        padding: 10px 4px; /* Touch target */
+        font-size: 0.8rem;
+    }
+
+    /* Controls Stacking */
+    .controls-columns {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .control-column {
+        min-width: 0;
+        width: 100%;
+    }
+
+    /* Timers */
+    .timers-row {
+        justify-content: space-between; /* Spread timers */
+        padding: 8px 12px;
+    }
+    
+    .timer-card {
+        min-width: auto;
+        flex: 1;
+        align-items: center;
+    }
+
+    /* Touch Targets */
+    button, .btc-button-small, .nav-tab, input, .dropdown-item {
+        min-height: 44px; /* Apple Human Interface Guidelines */
+    }
+    
+    /* TABLE TO CARDS TRANSFORMATION */
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    /* Hide Headers */
+    thead {
+        display: none;
+    }
+
+    /* Card Style for Rows */
+    tr {
+        margin: 0 12px 16px 12px;
+        background-color: var(--bg-dropdown); /* Slightly lighter than bg-app */
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    /* Best row highlight */
+    .row-best {
+        border-color: var(--r-legendary);
+        background: linear-gradient(135deg, rgba(234, 179, 8, 0.1) 0%, var(--bg-dropdown) 100%);
+    }
+
+    /* Flex Cell */
+    td {
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
+        min-height: 40px;
+    }
+
+    td:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    /* Label via Attribute */
+    td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: 700;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        margin-right: 12px;
+    }
+    
+    /* Adjust specific cell content */
+    .prob-cell {
+        align-items: flex-end; /* Keep aligned to right */
+    }
+    
+    /* Location fix */
+    .location-text {
+        justify-content: flex-end;
+    }
+
+    /* Hide table horizontal scroll */
+    .table-wrapper {
+        overflow-x: hidden;
+    }
+    
+    /* Equipment Grid Mobile */
+    .equipment-grid {
+        flex-direction: column;
+    }
+    
+    .equip-slots-container {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* Smaller slots on mobile */
+    }
+    
+}

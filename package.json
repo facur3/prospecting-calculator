@@ -4,6 +4,8 @@
   "description": "A comprehensive tool for the Roblox Prospecting experience. This calculator helps players optimize their loadouts, calculate ore probabilities, and plan their museum collections.",
   "main": "app.js",
   "scripts": {
+    "update": "node update_minerals.js",
+    "start": "node update_minerals.js && node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

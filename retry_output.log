@@ -1,0 +1,13 @@
+🚀 Starting Update Script (Miraheze Edition)...
+📖 Reading museum_data.js...
+🌍 Fetching https://prospecting.miraheze.org/wiki/Minerals...
+ℹ️ Table 0 matched: Name(col 0), Value(col 1)
+ℹ️ Table 1 matched: Name(col 0), Value(col 1)
+ℹ️ Table 2 matched: Name(col 0), Value(col 1)
+ℹ️ Table 3 matched: Name(col 0), Value(col 1)
+ℹ️ Table 4 matched: Name(col 0), Value(col 1)
+ℹ️ Table 5 matched: Name(col 0), Value(col 1)
+ℹ️ Table 6 matched: Name(col 0), Value(col 1)
+📊 Scanned minerals. Updated: 90, New: 0
+ℹ️ Updating existing MODIFIERS constant...
+💾 museum_data.js updated successfully!

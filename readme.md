@@ -1,5 +1,9 @@
 # Prospecting Calculator 💎
 
+### WEB:
+
+https://prospecting-calculator.vercel.app/
+
 A comprehensive tool for the Roblox Prospecting experience. This calculator helps players optimize their loadouts, calculate ore probabilities, and plan their museum collections.
 
 ![Prospecting Calculator](prospecting.png)
@@ -21,11 +25,6 @@ A comprehensive tool for the Roblox Prospecting experience. This calculator help
 - **Ring Slots:** Supports standard (6 rings) and Premium/Robux (8 rings) configurations.
 - **Stat Aggregation:** See the total summed stats of your entire build (Luck, Dig Speed, etc.).
 - **Recipe & Cost:** View crafting recipes and costs for all selected items.
-
-## Setup
-
-1. Ensure `database.js`, `museum_data.js`, and `equipment_data.js` are in the same directory as `index.html`.
-2. Open `index.html` in any modern web browser.
 
 ## Usage
 
